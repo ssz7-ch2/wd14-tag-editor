@@ -1,0 +1,31 @@
+#select-images {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--bg-transition);
+  z-index: var(--z-1);
+  position: absolute;
+  background-color: hsla(0, 0%, 0%, 0.5);
+  backdrop-filter: blur(2px) brightness(0.5);
+  filter: blur(0);
+}
+
+#select-images:hover > button {
+  background-color: hsl(var(--layer-3));
+}
+
+#select-images > button {
+  border: none;
+  background-color: hsl(var(--layer-2));
+  color: inherit;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: var(--radius-0);
+  cursor: pointer;
+  transition: var(--bg-transition);
+}

@@ -1,0 +1,31 @@
+#task-status {
+  background-color: hsla(var(--layer-3), 0.4);
+  border: 2px solid hsla(var(--layer-4), 0.6);
+  padding: 12px 20px;
+  margin-left: 25px;
+  border-radius: var(--radius-0);
+  width: 250px;
+  display: flex;
+  justify-content: center;
+  white-space: nowrap;
+  position: relative;
+}
+
+#task-status.processing {
+  background-color: hsla(113, 72%, 65%, 0.2);
+}
+
+#task-progress {
+  background-color: hsla(113, 72%, 65%, 0.4);
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  transition: opacity 150ms ease-out;
+}
+
+#task-status p {
+  font-size: 16px;
+  font-weight: 500;
+  z-index: 10;
+}

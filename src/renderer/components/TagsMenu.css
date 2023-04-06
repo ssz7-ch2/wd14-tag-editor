@@ -1,0 +1,41 @@
+#tags-menu {
+  width: 80px;
+  flex-shrink: 0;
+  background-color: hsl(var(--layer-1));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 0px;
+  gap: 2px;
+  justify-content: center;
+}
+
+#tags-menu button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: max-content;
+  width: 70px;
+  cursor: pointer;
+  padding: 4px 2px;
+  border-radius: var(--radius-0);
+  transition: var(--bg-transition);
+  background-color: inherit;
+  border: none;
+  color: inherit;
+  gap: 3px;
+}
+
+#tags-menu button:hover {
+  background-color: hsla(var(--layer-3), 0.6);
+}
+
+#tags-menu .menu-icon {
+  height: 36px;
+}
+
+#tags-menu button > p {
+  font-size: 11px;
+  color: var(--text-1);
+}

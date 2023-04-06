@@ -1,0 +1,19 @@
+{
+  "name": "wd1.4-tagger-editor",
+  "version": "1.0.0",
+  "description": "App for editing tags and tagging images",
+  "license": "MIT",
+  "author": {
+    "name": "ssz7-ch2",
+    "url": "https://github.com/ssz7-ch2"
+  },
+  "main": "./dist/main/main.js",
+  "scripts": {
+    "rebuild": "node -r ts-node/register ../../.erb/scripts/electron-rebuild.js",
+    "postinstall": "npm run rebuild && npm run link-modules",
+    "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts"
+  },
+  "dependencies": {
+    "sharp": "^0.32.0"
+  }
+}

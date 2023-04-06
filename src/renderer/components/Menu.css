@@ -1,0 +1,40 @@
+#menu {
+  background-color: hsl(var(--layer-2));
+  height: 70px;
+  display: flex;
+  padding: 0px 8px;
+  gap: 4px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+#menu button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: max-content;
+  width: 80px;
+  cursor: pointer;
+  padding: 4px 0px;
+  border-radius: var(--radius-0);
+  transition: var(--bg-transition);
+  background-color: inherit;
+  border: none;
+  color: inherit;
+  gap: 3px;
+}
+
+#menu button:hover {
+  background-color: hsla(var(--layer-3), 0.6);
+}
+
+#menu button > p {
+  font-size: 11px;
+  color: var(--text-1);
+  white-space: nowrap;
+}
+
+#menu .menu-icon {
+  height: 36px;
+}

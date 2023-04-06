@@ -1,0 +1,71 @@
+#tags-panel {
+  display: flex;
+  outline: none;
+}
+
+.tags-container {
+  height: 100%;
+  flex-grow: 1;
+}
+
+#tag-popup {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: hsla(0, 0%, 0%, 0.5);
+}
+
+#tag-popup-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px;
+  width: 300px;
+  height: 200px;
+  background-color: hsl(var(--layer-2));
+  border-radius: var(--radius-0);
+  box-shadow: 5px 5px 20px hsla(0, 0%, 0%, 0.8);
+  gap: 5px;
+}
+
+#tag-popup-container label {
+  font-size: 18px;
+}
+
+#tag-popup-container input {
+  font-size: 16px;
+  background-color: hsl(var(--layer-1));
+  border: 2px solid hsl(var(--layer-0));
+  border-radius: var(--radius-0);
+  padding: 4px 8px;
+  color: inherit;
+  outline-color: hsl(var(--layer-4));
+}
+
+#tag-popup-container input:focus {
+  outline-style: solid;
+  outline-width: 2px;
+}
+
+#tag-popup-container > div {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 5px;
+}
+
+#tag-popup-container button {
+  width: 100%;
+  border: none;
+  padding: 10px 0px;
+  cursor: pointer;
+  background-color: hsl(var(--layer-3));
+  color: inherit;
+  font-size: inherit;
+  border-radius: var(--radius-0);
+}
