@@ -8,6 +8,7 @@ from flask import Flask, request
 from huggingface_hub import hf_hub_download
 from onnxruntime import InferenceSession
 from PIL import Image
+import torch
 
 app = Flask(__name__)
 

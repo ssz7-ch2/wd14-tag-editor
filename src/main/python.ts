@@ -73,10 +73,26 @@ export default async function setUp() {
     });
     createVenvTask.end('Created venv');
 
+    const pipPath = path.join(venvDir, 'Scripts/pip');
+    const torchTask = new Task();
+    torchTask.start('Installing torch');
+
+    const torch = spawn(pipPath, [
+      'install',
+      'torch',
+      'torchvision',
+      '--index-url',
+      'https://download.pytorch.org/whl/cu117',
+    ]);
+    await new Promise((resolve) => {
+      torch.on('close', resolve);
+    });
+
+    torchTask.end('Installed python packages');
+
     const pipTask = new Task();
     pipTask.start('Installing python packages');
 
-    const pipPath = path.join(venvDir, 'Scripts/pip');
     const pip = spawn(pipPath, ['install', '-r', './python/requirements.txt']);
     await new Promise((resolve) => {
       pip.on('close', resolve);
