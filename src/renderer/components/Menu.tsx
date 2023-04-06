@@ -5,13 +5,14 @@ import {
   faPlayCircle,
   faSave,
 } from '@fortawesome/free-solid-svg-icons';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import {
   filterTagsAtom,
   imagesAtom,
   imagesTagsAtom,
+  tagThresholdAtom,
 } from 'renderer/atoms/atom';
-import { handleImageFiles } from 'renderer/utils';
+import { handleImageFiles, sortTagScore } from 'renderer/utils';
 import { Images, SaveTagsType, TagData } from '../../../types/types';
 import './Menu.css';
 import MenuIcon from './MenuIcon';
@@ -23,6 +24,7 @@ function Menu() {
   const [imagesTags, setImagesTags] = useAtom(imagesTagsAtom);
   const setFilterTags = useSetAtom(filterTagsAtom);
   const setImages = useSetAtom(imagesAtom);
+  const tagThreshold = useAtomValue(tagThresholdAtom);
 
   console.log('render Menu');
 
@@ -74,7 +76,10 @@ function Menu() {
           .map(([imagePath, tags]) => {
             return {
               path: imagePath,
-              tags: tags.map((tag) => tag.name),
+              tags: tags
+                .filter((tag) => tag.score > tagThreshold)
+                .sort(sortTagScore)
+                .map((tag) => tag.name),
             };
           }) as SaveTagsType
       );
