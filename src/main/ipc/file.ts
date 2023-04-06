@@ -197,7 +197,7 @@ export async function saveTags(
   const task = new Task();
   task.start(`Saving tags 0/${imagesTags.length}`);
   let count = 0;
-  imagesTags.forEach(async (image) => {
+  const res = imagesTags.map(async (image) => {
     const tagsFilePath = path.join(
       path.dirname(image.path),
       `${path.basename(image.path, path.extname(image.path))}.txt`
@@ -210,7 +210,7 @@ export async function saveTags(
       const existingTags = existingTagsFile
         .split(',')
         .map((tag) => tag.trim())
-        .filter((tag) => image.tags.includes(tag));
+        .filter((tag) => !image.tags.includes(tag));
       image.tags = image.tags.concat(existingTags);
     } catch (error) {
       /* tags don't exist */
@@ -222,4 +222,6 @@ export async function saveTags(
       count / imagesTags.length
     );
   });
+  await Promise.all(res);
+  task.end(`Saved Tags`);
 }
