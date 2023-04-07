@@ -4,11 +4,11 @@ import sys
 
 import cv2
 import numpy as np
+import torch
 from flask import Flask, request
 from huggingface_hub import hf_hub_download
 from onnxruntime import InferenceSession
 from PIL import Image
-import torch
 
 app = Flask(__name__)
 
@@ -72,7 +72,11 @@ class Tagger:
         self.model_path = os.path.join(model_dir, MODEL_FILE)
         self.model_name = model_name
     def load(self):
-        self.model = InferenceSession(self.model_path, providers=Tagger.providers)
+        try:
+            self.model = InferenceSession(self.model_path, providers=Tagger.providers)
+        except:
+            providers = ['CPUExecutionProvider']
+            self.model = InferenceSession(self.model_path, providers=providers)
 
     def tag_image(self, image_path, threshold_low):
         image = Image.open(image_path)
