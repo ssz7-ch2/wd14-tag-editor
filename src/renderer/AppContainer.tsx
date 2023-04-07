@@ -1,7 +1,7 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import Split from 'react-split';
 import './AppContainer.css';
-import { imagesAtom, popupAtom } from './atoms/atom';
+import { imagesAtom, popupAtom } from './atoms/primitiveAtom';
 import GalleryPanel from './components/GalleryPanel';
 import ImagePanel from './components/ImagePanel';
 import Menu from './components/Menu';
@@ -71,7 +71,7 @@ function AppContainer() {
         <Split
           className="split"
           snapOffset={0}
-          sizes={[55, 10, 35]}
+          sizes={[55, 12, 33]}
           minSize={[400, 100, 250]}
           expandToMin
         >

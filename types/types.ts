@@ -29,7 +29,9 @@ export type TaskStatusType = {
   status: 'Idle' | 'Processing';
 };
 
+export type TagsPanelType = 'all' | 'selected';
+
 export type AddTagPopup = {
   show: boolean;
-  panel: 'all' | 'selected';
+  panel: TagsPanelType;
 };

@@ -1,11 +1,6 @@
 import { atom, useAtomValue, useSetAtom } from 'jotai';
-import {
-  filterTagsAtom,
-  imagesAtom,
-  imagesTagsAtom,
-  selectedImagesAtom,
-} from 'renderer/atoms/atom';
-import { handleImageFiles } from 'renderer/utils';
+import { imagesDataAtom } from 'renderer/atoms/derivedWriteAtom';
+import { imagesAtom, selectedImagesAtom } from 'renderer/atoms/primitiveAtom';
 import { ImageFileInfo, Images, TagData } from '../../../types/types';
 import './ImagePanel.css';
 
@@ -24,9 +19,7 @@ const imageListAtom = atom((get) => {
 
 function ImagePanel() {
   const imageList = useAtomValue(imageListAtom);
-  const setImages = useSetAtom(imagesAtom);
-  const setImagesTags = useSetAtom(imagesTagsAtom);
-  const setFilterTags = useSetAtom(filterTagsAtom);
+  const setImagesData = useSetAtom(imagesDataAtom);
 
   console.log('render ImagePanel');
   return (
@@ -40,13 +33,7 @@ function ImagePanel() {
           window.electron.ipcRenderer.once(
             'dialog:openFiles',
             (images, imagesTags) =>
-              handleImageFiles(
-                images as Images,
-                imagesTags as TagData,
-                setImages,
-                setImagesTags,
-                setFilterTags
-              )
+              setImagesData(images as Images, imagesTags as TagData)
           );
         }}
         onDragOver={(e) => e.preventDefault()}
@@ -61,17 +48,12 @@ function ImagePanel() {
           } else {
             filePaths = [...e.dataTransfer.files].map((file) => file.path);
           }
+
           window.electron.ipcRenderer.sendMessage('task:loadImages', filePaths);
           window.electron.ipcRenderer.once(
             'task:loadImages',
             (images, imagesTags) =>
-              handleImageFiles(
-                images as Images,
-                imagesTags as TagData,
-                setImages,
-                setImagesTags,
-                setFilterTags
-              )
+              setImagesData(images as Images, imagesTags as TagData)
           );
         }}
       >

@@ -1,5 +1,5 @@
 import { useAtomValue } from 'jotai';
-import { taskStatusAtom } from 'renderer/atoms/atom';
+import { taskStatusAtom } from 'renderer/atoms/primitiveAtom';
 import './TaskStatus.css';
 
 function TaskStatus() {

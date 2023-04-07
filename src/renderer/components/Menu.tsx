@@ -6,13 +6,9 @@ import {
   faSave,
 } from '@fortawesome/free-solid-svg-icons';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import {
-  filterTagsAtom,
-  imagesAtom,
-  imagesTagsAtom,
-  tagThresholdAtom,
-} from 'renderer/atoms/atom';
-import { handleImageFiles, sortTagScore } from 'renderer/utils';
+import { imagesDataAtom } from 'renderer/atoms/derivedWriteAtom';
+import { imagesTagsAtom, tagThresholdAtom } from 'renderer/atoms/primitiveAtom';
+import { sortTagScore } from 'renderer/utils';
 import { Images, SaveTagsType, TagData } from '../../../types/types';
 import './Menu.css';
 import MenuIcon from './MenuIcon';
@@ -21,9 +17,8 @@ import TaskStatus from './TaskStatus';
 // TODO: setting for tag images, replace existing tags or combine with existing tags
 
 function Menu() {
+  const setImagesData = useSetAtom(imagesDataAtom);
   const [imagesTags, setImagesTags] = useAtom(imagesTagsAtom);
-  const setFilterTags = useSetAtom(filterTagsAtom);
-  const setImages = useSetAtom(imagesAtom);
   const tagThreshold = useAtomValue(tagThresholdAtom);
 
   console.log('render Menu');
@@ -34,14 +29,7 @@ function Menu() {
       window.electron.ipcRenderer.once(
         'dialog:openFolder',
         (images, imagesTags) =>
-          handleImageFiles(
-            images as Images,
-            imagesTags as TagData,
-            setImages,
-            setImagesTags,
-            setFilterTags,
-            true
-          )
+          setImagesData(images as Images, imagesTags as TagData, true)
       );
     },
     tagImages: async () => {

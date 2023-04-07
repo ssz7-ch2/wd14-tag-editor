@@ -1,32 +1,11 @@
 import { atom, useAtomValue, useSetAtom } from 'jotai';
-import { imagesTagsAtom, selectedImagesAtom } from 'renderer/atoms/atom';
-import { sortTagScore } from 'renderer/utils';
+import { tagsListSelectedAtom } from 'renderer/atoms/derivedReadAtom';
+import {
+  imagesTagsAtom,
+  selectedImagesAtom,
+} from 'renderer/atoms/primitiveAtom';
 import { TagData } from '../../../types/types';
 import TagsList from './TagsList';
-
-const tagsListAtom = atom((get) => {
-  const tagsDict: { [key: string]: number[] } = {};
-  const selectedImages = get(selectedImagesAtom);
-  Object.entries(get(imagesTagsAtom)).forEach(([imagePath, tags]) => {
-    if (selectedImages.includes(imagePath)) {
-      tags.forEach((tag) => {
-        if (!(tag.name in tagsDict)) {
-          tagsDict[tag.name] = [];
-        }
-        tagsDict[tag.name].push(tag.score);
-      });
-    }
-  });
-
-  return Object.entries(tagsDict)
-    .map(([tag, scores]) => {
-      return {
-        name: tag,
-        score: Math.max(...scores),
-      };
-    })
-    .sort(sortTagScore);
-});
 
 const setSelectedImagesTagsAtom = atom(
   null,
@@ -55,13 +34,17 @@ const setSelectedImagesTagsAtom = atom(
 
 function TagsPanelSelected() {
   console.log('render TagsPanelSelected');
-  const tagsList = useAtomValue(tagsListAtom);
+  const tagsList = useAtomValue(tagsListSelectedAtom);
   const setSelectedImagesTags = useSetAtom(setSelectedImagesTagsAtom);
 
   return (
     <div className="panel">
       <h2 className="panel-header">Selected Image Tags</h2>
-      <TagsList tags={tagsList} setImagesTags={setSelectedImagesTags} />
+      <TagsList
+        tags={tagsList}
+        setImagesTags={setSelectedImagesTags}
+        panel="selected"
+      />
     </div>
   );
 }

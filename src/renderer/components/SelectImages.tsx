@@ -1,17 +1,10 @@
 import { useSetAtom } from 'jotai';
-import {
-  filterTagsAtom,
-  imagesAtom,
-  imagesTagsAtom,
-} from 'renderer/atoms/atom';
-import { handleImageFiles } from 'renderer/utils';
+import { imagesDataAtom } from 'renderer/atoms/derivedWriteAtom';
 import { Images, TagData } from '../../../types/types';
 import './SelectImages.css';
 
 function SelectImages() {
-  const setImages = useSetAtom(imagesAtom);
-  const setImagesTags = useSetAtom(imagesTagsAtom);
-  const setFilterTags = useSetAtom(filterTagsAtom);
+  const setImagesData = useSetAtom(imagesDataAtom);
 
   console.log('render SelectImages');
   return (
@@ -22,13 +15,7 @@ function SelectImages() {
         window.electron.ipcRenderer.once(
           'dialog:openFiles',
           (images, imagesTags) =>
-            handleImageFiles(
-              images as Images,
-              imagesTags as TagData,
-              setImages,
-              setImagesTags,
-              setFilterTags
-            )
+            setImagesData(images as Images, imagesTags as TagData)
         );
       }}
       onDragOver={(e) => e.preventDefault()}
@@ -47,13 +34,7 @@ function SelectImages() {
         window.electron.ipcRenderer.once(
           'task:loadImages',
           (images, imagesTags) =>
-            handleImageFiles(
-              images as Images,
-              imagesTags as TagData,
-              setImages,
-              setImagesTags,
-              setFilterTags
-            )
+            setImagesData(images as Images, imagesTags as TagData)
         );
       }}
       aria-hidden="true"

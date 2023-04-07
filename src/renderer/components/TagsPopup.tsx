@@ -4,7 +4,7 @@ import {
   imagesTagsAtom,
   popupAtom,
   selectedImagesAtom,
-} from 'renderer/atoms/atom';
+} from 'renderer/atoms/primitiveAtom';
 import './TagsPopup.css';
 
 function TagsPopup() {

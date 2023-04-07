@@ -1,4 +1,4 @@
-import { atom, useAtomValue } from 'jotai';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
 import {
   ComponentProps,
   memo,
@@ -7,20 +7,27 @@ import {
   useRef,
   useState,
 } from 'react';
-import { selectedTagsAtom } from 'renderer/atoms/atom';
-import { TagType } from '../../../types/types';
+import {
+  selectedTagsAtom,
+  selectedTagsPanelAtom,
+} from 'renderer/atoms/primitiveAtom';
+import { TagType, TagsPanelType } from '../../../types/types';
 import './TagItem.css';
 
 type TagItemProps = ComponentProps<'div'> & {
   tag: TagType;
   onEdit: (value: string) => void;
   moveToNext: () => void;
+  panel: TagsPanelType;
+  onClickHandler: React.MouseEventHandler<HTMLInputElement>;
 };
 
 const TagItem = memo(function TagItem({
   tag,
   onEdit,
   moveToNext,
+  panel,
+  onClickHandler,
   ...props
 }: TagItemProps) {
   const [tagName, setTagName] = useState(tag.name);
@@ -28,7 +35,12 @@ const TagItem = memo(function TagItem({
   const ref = useRef<HTMLDivElement>(null);
 
   const selectedAtom = useMemo(
-    () => atom((get) => get(selectedTagsAtom).includes(tag)),
+    () =>
+      atom(
+        (get) =>
+          get(selectedTagsPanelAtom) === panel &&
+          get(selectedTagsAtom).some((t) => t.name === tag.name)
+      ),
     [tag]
   );
   const focusAtom = useMemo(
@@ -45,7 +57,9 @@ const TagItem = memo(function TagItem({
   const selected = useAtomValue(selectedAtom);
   const focus = useAtomValue(focusAtom);
 
-  //console.log('render TagItem');
+  const setSelectedTags = useSetAtom(selectedTagsAtom);
+
+  //console.log('render TagItem', tag.name);
 
   useEffect(() => {
     if (focus && ref.current) {
@@ -69,6 +83,13 @@ const TagItem = memo(function TagItem({
         readOnly={!editing}
         onChange={(e) => setTagName(e.target.value)}
         onDoubleClick={() => setEditing(true)}
+        onClick={(e) => {
+          if (e.detail === 1 && selected && !editing) {
+            setSelectedTags([]);
+          } else {
+            onClickHandler(e);
+          }
+        }}
         onBlur={() => {
           setEditing(false);
           if (tagName !== tag.name) {

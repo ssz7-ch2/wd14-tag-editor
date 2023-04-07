@@ -7,120 +7,28 @@ import {
   faPlusCircle,
   faPlusSquare,
 } from '@fortawesome/free-solid-svg-icons';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import {
-  filterTagsAtom,
-  imagesTagsAtom,
-  popupAtom,
-  selectedImagesAtom,
-  selectedTagsAtom,
-  tagThresholdAtom,
-} from 'renderer/atoms/atom';
+  addTagsAllAtom,
+  addTagsAtom,
+  filterAtom,
+  includeTagsAtom,
+  removeFilterAtom,
+  removeTagsAllAtom,
+  removeTagsAtom,
+} from 'renderer/atoms/derivedWriteAtom';
 import MenuIcon from './MenuIcon';
 import './TagsMenu.css';
 
 function TagsMenu() {
   console.log('render TagsMenu');
-  const setPopup = useSetAtom(popupAtom);
-  const selectedImages = useAtomValue(selectedImagesAtom);
-  const selectedTags = useAtomValue(selectedTagsAtom);
-  const setImagesTags = useSetAtom(imagesTagsAtom);
-  const setFilterTags = useSetAtom(filterTagsAtom);
-  const tagThreshold = useAtomValue(tagThresholdAtom);
-
-  const actions = {
-    addTags: () => {
-      setPopup({
-        show: true,
-        panel: 'selected',
-      });
-    },
-    addTagsAll: () => {
-      setPopup({
-        show: true,
-        panel: 'all',
-      });
-    },
-    removeTags: () => {
-      if (selectedTags.length === 0 || selectedImages.length === 0) return;
-
-      setImagesTags((prev) => {
-        const updated = { ...prev };
-        selectedImages.forEach((imagePath) => {
-          let tags = [...updated[imagePath]];
-          tags = tags.filter(
-            (tag) =>
-              !selectedTags.some((selectedTag) => selectedTag.name === tag.name)
-          );
-          updated[imagePath] = tags;
-        });
-        return updated;
-      });
-    },
-    removeTagsAll: () => {
-      if (selectedTags.length === 0) return;
-
-      setImagesTags((prev) => {
-        const updated = { ...prev };
-        Object.entries(updated).forEach(([imagePath, tags]) => {
-          let updatedTags = [...tags];
-          updatedTags = updatedTags.filter(
-            (tag) =>
-              !selectedTags.some((selectedTag) => selectedTag.name === tag.name)
-          );
-          updated[imagePath] = updatedTags;
-        });
-        return updated;
-      });
-    },
-    filter: () => {
-      setFilterTags((prev) => {
-        const updated = new Set(selectedTags.map((tag) => tag.name));
-        if (
-          prev.size === updated.size &&
-          [...prev].every((tag) => updated.has(tag))
-        ) {
-          return prev;
-        }
-        return updated;
-      });
-    },
-    removeFilter: () => {
-      setFilterTags((prev) => {
-        if (prev.size === 0) {
-          return prev;
-        }
-        return new Set<string>();
-      });
-    },
-    includeTags: () => {
-      if (selectedTags.length === 0 || selectedImages.length === 0) return;
-
-      setImagesTags((prev) => {
-        const updated = { ...prev };
-        let count = 0;
-        selectedImages.forEach((imagePath) => {
-          const tags = [...updated[imagePath]];
-          tags.forEach((tag) => {
-            if (
-              selectedTags.some(
-                (selectedTag) => selectedTag.name === tag.name
-              ) &&
-              tag.score < tagThreshold
-            ) {
-              tag.score = tagThreshold;
-              count += 1;
-            }
-          });
-          updated[imagePath] = tags;
-        });
-        if (count == 0) {
-          return prev;
-        }
-        return updated;
-      });
-    },
-  };
+  const addTags = useSetAtom(addTagsAtom);
+  const addTagsAll = useSetAtom(addTagsAllAtom);
+  const removeTags = useSetAtom(removeTagsAtom);
+  const removeTagsAll = useSetAtom(removeTagsAllAtom);
+  const filter = useSetAtom(filterAtom);
+  const removeFilter = useSetAtom(removeFilterAtom);
+  const includeTags = useSetAtom(includeTagsAtom);
 
   return (
     <div id="tags-menu">
@@ -128,43 +36,43 @@ function TagsMenu() {
         icon={faPlus}
         text="Add Tag"
         color="rgb(116, 230, 101)"
-        onClick={actions.addTags}
+        onClick={addTags}
       />
       <MenuIcon
         icon={faPlusCircle}
         text="Add To All"
         color="rgb(116, 230, 101)"
-        onClick={actions.addTagsAll}
+        onClick={addTagsAll}
       />
       <MenuIcon
         icon={faMinus}
         text="Remove Tag"
         color="rgb(236, 95, 100)"
-        onClick={actions.removeTags}
+        onClick={removeTags}
       />
       <MenuIcon
         icon={faCircleMinus}
         text="Remove From All"
         color="rgb(236, 95, 100)"
-        onClick={actions.removeTagsAll}
+        onClick={removeTagsAll}
       />
       <MenuIcon
         icon={faFilter}
         text="Filter"
         color="rgb(101, 178, 230)"
-        onClick={actions.filter}
+        onClick={filter}
       />
       <MenuIcon
         icon={faFilterCircleXmark}
         text="Remove Filter"
         color="rgb(101, 178, 230)"
-        onClick={actions.removeFilter}
+        onClick={removeFilter}
       />
       <MenuIcon
         icon={faPlusSquare}
         text="Include Tag"
         color="rgb(116, 230, 101)"
-        onClick={actions.includeTags}
+        onClick={includeTags}
       />
     </div>
   );

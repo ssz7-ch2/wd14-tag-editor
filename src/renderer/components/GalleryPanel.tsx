@@ -1,26 +1,8 @@
-import { atom, useAtom, useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
-import {
-  filterTagsAtom,
-  imagesAtom,
-  imagesTagsAtom,
-  selectedImagesAtom,
-} from 'renderer/atoms/atom';
+import { filteredImagesAtom } from 'renderer/atoms/derivedReadAtom';
+import { selectedImagesAtom } from 'renderer/atoms/primitiveAtom';
 import './GalleryPanel.css';
-
-export const imageListAtom = atom((get) => {
-  const images = get(imagesAtom);
-  const imagesTags = get(imagesTagsAtom);
-  const filterTags = get(filterTagsAtom);
-
-  return Object.values(images).filter(
-    (image) =>
-      filterTags.size === 0 ||
-      [...filterTags].every((filterTag) =>
-        imagesTags[image.path].some((tag) => tag.name === filterTag)
-      )
-  );
-});
 
 // TODO: convert all actions to write only atoms
 
@@ -28,7 +10,7 @@ function GalleryPanel() {
   const [selectedImages, setSelectedImages] = useAtom(selectedImagesAtom);
   const [prevIndex, setPrevIndex] = useState(0);
 
-  const imageList = useAtomValue(imageListAtom);
+  const imageList = useAtomValue(filteredImagesAtom);
 
   const firstSelected = useRef<HTMLDivElement>(null);
 
@@ -44,20 +26,6 @@ function GalleryPanel() {
       });
     }, 50);
   }, [selectedImages]);
-
-  useEffect(() => {
-    setSelectedImages((prev) => {
-      const updated = prev.filter((imagePath) =>
-        imageList.some((image) => image.path === imagePath)
-      );
-
-      if (updated.length === 0 && imageList.length > 0) {
-        const firstImage = imageList[0];
-        updated.push(firstImage.path);
-      }
-      return updated;
-    });
-  }, [imageList]);
 
   return (
     <div

@@ -3,6 +3,7 @@ import {
   AddTagPopup,
   Images,
   TagData,
+  TagsPanelType,
   TagType,
   TaskStatusType,
 } from '../../../types/types';
@@ -17,6 +18,8 @@ export const imagesTagsAtom = atom<TagData>({});
 
 export const selectedTagsAtom = atom<TagType[]>([]);
 
+export const selectedTagsPanelAtom = atom<TagsPanelType>('selected');
+
 export const taskStatusAtom = atom<TaskStatusType>({
   message: 'Idle',
   progress: 0,
@@ -28,4 +31,4 @@ export const popupAtom = atom<AddTagPopup>({
   panel: 'selected',
 });
 
-export const tagThresholdAtom = atom(0.25);
+export const tagThresholdAtom = atom(0.2);

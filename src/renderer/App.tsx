@@ -4,7 +4,7 @@ import { Route, MemoryRouter as Router, Routes } from 'react-router-dom';
 import { TaskStatusType } from '../../types/types';
 import './App.css';
 import AppContainer from './AppContainer';
-import { taskStatusAtom } from './atoms/atom';
+import { taskStatusAtom } from './atoms/primitiveAtom';
 
 export default function App() {
   const setTaskStatus = useSetAtom(taskStatusAtom);
