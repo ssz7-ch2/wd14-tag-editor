@@ -1,5 +1,6 @@
 import { useSetAtom } from 'jotai';
 import { useEffect } from 'react';
+import 'react-contexify/dist/ReactContexify.css';
 import { Route, MemoryRouter as Router, Routes } from 'react-router-dom';
 import { TaskStatusType } from '../../types/types';
 import './App.css';

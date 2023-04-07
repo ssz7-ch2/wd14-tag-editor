@@ -19,6 +19,53 @@
   --bg-transition: background-color 80ms ease-out;
   --z-0: 0;
   --z-1: 100;
+  --contexify-menu-bgColor: hsla(var(--layer-3), 0.98) !important;
+  --contexify-separator-color: #fff !important;
+  --contexify-item-color: #fff !important;
+  --contexify-activeItem-color: #fff !important;
+  --contexify-activeItem-bgColor: hsl(var(--layer-4)) !important;
+  --contexify-rightSlot-color: #6f6e77 !important;
+  --contexify-activeRightSlot-color: #fff !important;
+  --contexify-arrow-color: #6f6e77 !important;
+  --contexify-activeArrow-color: #fff !important;
+  --contexify-menu-padding: 0px !important;
+  --contexify-itemContent-padding: 12px !important;
+  --contexify-menu-radius: var(--radius-0) !important;
+  --contexify-activeItem-radius: 0px !important;
+}
+
+.contexify {
+  overflow: hidden;
+}
+
+.contexify_willEnter-fade {
+  animation: contexify_fadeIn 150ms ease !important;
+}
+
+.contexify_willLeave-fade {
+  animation: contexify_fadeOut 150ms ease !important;
+}
+
+@keyframes contexify_fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes contexify_fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 }
 
 body {

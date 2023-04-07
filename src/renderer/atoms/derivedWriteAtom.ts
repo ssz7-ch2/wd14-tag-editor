@@ -1,5 +1,12 @@
 import { atom } from 'jotai';
-import { Images, TagData } from '../../../types/types';
+import { displayedImageAtom } from 'renderer/components/ImagePanel';
+import { sortTagScore } from 'renderer/utils';
+import {
+  Images,
+  SaveTagsType,
+  TagData,
+  TagsPanelType,
+} from '../../../types/types';
 import {
   filterTagsAtom,
   imagesAtom,
@@ -119,15 +126,18 @@ export const removeTagsAllAtom = atom(null, (get, set) => {
 export const filterAtom = atom(null, (get, set) => {
   const selectedTags = get(selectedTagsAtom);
   const updatedFilter = new Set(selectedTags.map((tag) => tag.name));
+  let update = true;
   set(filterTagsAtom, (prev) => {
     if (
       prev.size === updatedFilter.size &&
       [...prev].every((tag) => updatedFilter.has(tag))
     ) {
+      update = false;
       return prev;
     }
     return updatedFilter;
   });
+  if (!update) return;
   const imagesTags = get(imagesTagsAtom);
   set(selectedImagesAtom, (prev) => {
     const updated = prev.filter((imagePath) =>
@@ -135,6 +145,12 @@ export const filterAtom = atom(null, (get, set) => {
         imagesTags[imagePath].some((tag) => tag.name === filterTag)
       )
     );
+    if (
+      updated.length === prev.length &&
+      updated.every((imagePath) => prev.includes(imagePath))
+    ) {
+      return prev;
+    }
     if (updated.length > 0) {
       return updated;
     } else {
@@ -205,3 +221,102 @@ export const clearSelectedTagsAtom = atom(null, (get, set) => {
     return [];
   });
 });
+
+export const tagAllImagesAtom = atom(null, async (get, set) => {
+  const untagged = Object.entries(get(imagesTagsAtom))
+    .filter(([, tags]) => tags.every((tag) => tag.score === 1))
+    .map(([imagePath]) => imagePath);
+  if (untagged.length === 0) return;
+
+  window.electron.ipcRenderer.sendMessage(
+    'task:tagImages',
+    untagged as string[]
+  );
+  window.electron.ipcRenderer.once('task:tagImages', (arg) => {
+    const tagData = arg as TagData;
+    set(imagesTagsAtom, (prev) => {
+      const updated = { ...prev };
+      Object.entries(tagData).forEach(([imagePath, tags]) => {
+        updated[imagePath] = tags;
+      });
+      return updated;
+    });
+  });
+});
+
+export const tagSelectedImagesAtom = atom(
+  null,
+  async (get, set, last = false) => {
+    const imagesTags = get(imagesTagsAtom);
+    let selectedImages = get(selectedImagesAtom);
+    const displayedImage = get(displayedImageAtom);
+    if (last) {
+      if (!displayedImage) return;
+      selectedImages = [displayedImage.path];
+    }
+    const untagged = selectedImages.filter((imagePath) =>
+      imagesTags[imagePath].every((tag) => tag.score === 1)
+    );
+    if (untagged.length === 0) return;
+
+    window.electron.ipcRenderer.sendMessage(
+      'task:tagImages',
+      untagged as string[]
+    );
+    window.electron.ipcRenderer.once('task:tagImages', (arg) => {
+      const tagData = arg as TagData;
+      set(imagesTagsAtom, (prev) => {
+        const updated = { ...prev };
+        Object.entries(tagData).forEach(([imagePath, tags]) => {
+          updated[imagePath] = tags;
+        });
+        return updated;
+      });
+    });
+  }
+);
+
+export const saveTagsAtom = atom(null, (get) => {
+  const tagThreshold = get(tagThresholdAtom);
+  window.electron.ipcRenderer.sendMessage(
+    'task:saveTags',
+    Object.entries(get(imagesTagsAtom))
+      .filter(([, tags]) => tags.length > 0)
+      .map(([imagePath, tags]) => {
+        return {
+          path: imagePath,
+          tags: tags
+            .filter((tag) => tag.score > tagThreshold)
+            .sort(sortTagScore)
+            .map((tag) => tag.name),
+        };
+      }) as SaveTagsType
+  );
+});
+
+export const openFolderAtom = atom(null, (_get, set) => {
+  window.electron.ipcRenderer.sendMessage('dialog:openFolder');
+  window.electron.ipcRenderer.once('dialog:openFolder', (images, imagesTags) =>
+    set(imagesDataAtom, images as Images, imagesTags as TagData, true)
+  );
+});
+
+export const popupSetImagesTagsAtom = atom(
+  null,
+  (get, set, panel: TagsPanelType, value: string) => {
+    set(imagesTagsAtom, (prev) => {
+      const updated = { ...prev };
+      if (panel === 'all') {
+        Object.entries(updated).forEach(([imagePath, tags]) => {
+          updated[imagePath] = [{ name: value, score: 1 }, ...tags];
+        });
+      } else {
+        get(selectedImagesAtom).forEach((imagePath) => {
+          updated[imagePath] = [{ name: value, score: 1 }, ...prev[imagePath]];
+        });
+      }
+
+      return updated;
+    });
+  }
+);

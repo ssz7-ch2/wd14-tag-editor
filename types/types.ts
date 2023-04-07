@@ -35,3 +35,5 @@ export type AddTagPopup = {
   show: boolean;
   panel: TagsPanelType;
 };
+
+export type ContextMenuIds = 'ImagePanel' | 'TagItem';

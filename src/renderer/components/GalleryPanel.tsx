@@ -1,10 +1,12 @@
 import { useAtom, useAtomValue } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
+import { useContextMenu } from 'react-contexify';
 import { filteredImagesAtom } from 'renderer/atoms/derivedReadAtom';
 import { selectedImagesAtom } from 'renderer/atoms/primitiveAtom';
+import { ContextMenuIds } from '../../../types/types';
 import './GalleryPanel.css';
 
-// TODO: convert all actions to write only atoms
+const menuId: ContextMenuIds = 'ImagePanel';
 
 function GalleryPanel() {
   const [selectedImages, setSelectedImages] = useAtom(selectedImagesAtom);
@@ -13,6 +15,10 @@ function GalleryPanel() {
   const imageList = useAtomValue(filteredImagesAtom);
 
   const firstSelected = useRef<HTMLDivElement>(null);
+
+  const { show } = useContextMenu({
+    id: menuId,
+  });
 
   console.log('render GalleryPanel');
 
@@ -25,7 +31,47 @@ function GalleryPanel() {
         inline: 'nearest',
       });
     }, 50);
-  }, [selectedImages]);
+  }, [imageList]);
+
+  const handleOnClick = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    i: number,
+    path: string
+  ) => {
+    if (!e.shiftKey) {
+      setPrevIndex(i);
+    }
+    setSelectedImages((prev) => {
+      if (prev.length === 1 && prev.includes(imageList[i].path)) {
+        return prev;
+      }
+
+      if (e.ctrlKey) {
+        if (prev.includes(path)) {
+          return prev.filter((imagePath) => imagePath !== path);
+        }
+
+        return [...prev, path];
+      }
+      if (e.shiftKey) {
+        const updated: string[] = [];
+
+        imageList
+          .slice(
+            prevIndex > i ? i : prevIndex,
+            prevIndex > i ? prevIndex + 1 : i + 1
+          )
+          .forEach((image) => updated.push(image.path));
+
+        if (prevIndex > i) {
+          updated.reverse();
+        }
+        return [...prev, ...updated];
+      }
+
+      return [path];
+    });
+  };
 
   return (
     <div
@@ -40,7 +86,7 @@ function GalleryPanel() {
       }}
     >
       <h2 className="panel-header">All Images</h2>
-      <div id="gallery">
+      <div id="gallery" onContextMenu={(e) => show({ event: e })}>
         {imageList.map((image, i) => (
           <div
             key={image.path}
@@ -54,39 +100,7 @@ function GalleryPanel() {
                 : undefined
             }
             onClick={(e) => {
-              if (!e.shiftKey) {
-                setPrevIndex(i);
-              }
-              setSelectedImages((prev) => {
-                if (prev.length === 1 && prev.includes(imageList[i].path)) {
-                  return prev;
-                }
-
-                if (e.ctrlKey) {
-                  if (prev.includes(image.path)) {
-                    return prev.filter((imagePath) => imagePath !== image.path);
-                  }
-
-                  return [...prev, image.path];
-                }
-                if (e.shiftKey) {
-                  const updated: string[] = [];
-
-                  imageList
-                    .slice(
-                      prevIndex > i ? i : prevIndex,
-                      prevIndex > i ? prevIndex + 1 : i + 1
-                    )
-                    .forEach((image) => updated.push(image.path));
-
-                  if (prevIndex > i) {
-                    updated.reverse();
-                  }
-                  return [...prev, ...updated];
-                }
-
-                return [image.path];
-              });
+              handleOnClick(e, i, image.path);
             }}
           >
             <img

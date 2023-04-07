@@ -6,6 +6,7 @@ export async function tagImages(filePaths: string[]): Promise<TagData> {
   const data = {
     model: 'swinv2',
     image_paths: filePaths,
+    batch_size: 8,
     threshold_low: 0.05,
   };
   try {

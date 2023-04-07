@@ -18,7 +18,6 @@ function spawnPython(venvDir: string) {
     python.stdout.on('data', (data) => {
       const lines = String(data).split(/\r?\n/);
       lines.forEach((line) => {
-        console.log(line);
         if (line && line.startsWith('taskStatus:start')) {
           taggerTask = new Task(async () => {
             try {

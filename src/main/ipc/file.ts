@@ -136,6 +136,8 @@ export async function handleFolderOpen(
   const files = await fs.promises.readdir(filePaths[0]);
   const imageNames = files.filter(isValidImage);
 
+  if (imageNames.length === 0) return [{}, {}];
+
   const task = new Task();
   task.start(`Loading images 0/${imageNames.length}`);
 

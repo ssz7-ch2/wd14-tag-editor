@@ -59,7 +59,7 @@ const TagItem = memo(function TagItem({
 
   const setSelectedTags = useSetAtom(selectedTagsAtom);
 
-  //console.log('render TagItem', tag.name);
+  // console.log('render TagItem');
 
   useEffect(() => {
     if (focus && ref.current) {
@@ -67,6 +67,14 @@ const TagItem = memo(function TagItem({
       ref.current.querySelector('input')?.setSelectionRange(null, null);
     }
   }, [focus, ref.current, selected]);
+
+  const handleOnClick = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+    if (e.detail === 1 && selected && !editing) {
+      setSelectedTags([]);
+    } else {
+      onClickHandler(e);
+    }
+  };
 
   return (
     <div
@@ -83,13 +91,8 @@ const TagItem = memo(function TagItem({
         readOnly={!editing}
         onChange={(e) => setTagName(e.target.value)}
         onDoubleClick={() => setEditing(true)}
-        onClick={(e) => {
-          if (e.detail === 1 && selected && !editing) {
-            setSelectedTags([]);
-          } else {
-            onClickHandler(e);
-          }
-        }}
+        onContextMenu={handleOnClick}
+        onClick={handleOnClick}
         onBlur={() => {
           setEditing(false);
           if (tagName !== tag.name) {

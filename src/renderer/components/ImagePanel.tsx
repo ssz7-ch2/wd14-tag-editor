@@ -1,11 +1,22 @@
 import { atom, useAtomValue, useSetAtom } from 'jotai';
-import { imagesDataAtom } from 'renderer/atoms/derivedWriteAtom';
+import { Menu as ContextMenu, Item, useContextMenu } from 'react-contexify';
+import {
+  imagesDataAtom,
+  tagSelectedImagesAtom,
+} from 'renderer/atoms/derivedWriteAtom';
 import { imagesAtom, selectedImagesAtom } from 'renderer/atoms/primitiveAtom';
-import { ImageFileInfo, Images, TagData } from '../../../types/types';
+import {
+  ContextMenuIds,
+  ImageFileInfo,
+  Images,
+  TagData,
+} from '../../../types/types';
 import './ImagePanel.css';
 
+const menuId: ContextMenuIds = 'ImagePanel';
+
 // TODO: on left or right key press, change image
-const imageListAtom = atom((get) => {
+export const displayedImageAtom = atom((get) => {
   const imageList: ImageFileInfo[] = [];
   const images = get(imagesAtom);
   const selectedImages = get(selectedImagesAtom);
@@ -14,12 +25,18 @@ const imageListAtom = atom((get) => {
       imageList.push(image);
     }
   });
-  return imageList;
+  if (imageList.length === 0) return null;
+  return imageList[imageList.length - 1];
 });
 
 function ImagePanel() {
-  const imageList = useAtomValue(imageListAtom);
+  const displayedImage = useAtomValue(displayedImageAtom);
   const setImagesData = useSetAtom(imagesDataAtom);
+  const tagSelectedImages = useSetAtom(tagSelectedImagesAtom);
+
+  const { show } = useContextMenu({
+    id: menuId,
+  });
 
   console.log('render ImagePanel');
   return (
@@ -36,6 +53,7 @@ function ImagePanel() {
               setImagesData(images as Images, imagesTags as TagData)
           );
         }}
+        onContextMenu={(e) => show({ event: e })}
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
@@ -57,12 +75,17 @@ function ImagePanel() {
           );
         }}
       >
-        {imageList.length === 0 ? (
+        {displayedImage === null ? (
           <p>No selected images</p>
         ) : (
-          <img src={imageList[imageList.length - 1].src} alt="" />
+          <img src={displayedImage.src} alt="" />
         )}
       </div>
+
+      <ContextMenu id={menuId}>
+        <Item onClick={() => tagSelectedImages(true)}>Tag Image</Item>
+        <Item onClick={() => tagSelectedImages(false)}>Tag Selected</Item>
+      </ContextMenu>
     </div>
   );
 }

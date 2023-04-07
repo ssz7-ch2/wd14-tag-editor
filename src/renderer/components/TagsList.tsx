@@ -1,5 +1,6 @@
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { useMemo } from 'react';
+import { clearSelectedTagsAtom } from 'renderer/atoms/derivedWriteAtom';
 import {
   selectedTagsAtom,
   selectedTagsPanelAtom,
@@ -16,9 +17,9 @@ type TagsListProps = {
 };
 
 function TagsList({ tags, setImagesTags, panel }: TagsListProps) {
-  console.log('render TagsList');
   const setSelectedTags = useSetAtom(selectedTagsAtom);
   const setSelectedTagsPanel = useSetAtom(selectedTagsPanelAtom);
+  const clearSelectedTags = useSetAtom(clearSelectedTagsAtom);
 
   const tagThreshold = useAtomValue(tagThresholdAtom);
 
@@ -26,7 +27,6 @@ function TagsList({ tags, setImagesTags, panel }: TagsListProps) {
     () =>
       atom(null, (get, set, tags: TagType[]) => {
         const selectedTags = get(selectedTagsAtom);
-        console.log(selectedTags);
         if (selectedTags.length === 0) return;
 
         let newSelectedTag: TagType | null = null;
@@ -144,6 +144,12 @@ function TagsList({ tags, setImagesTags, panel }: TagsListProps) {
                 if (e.ctrlKey) {
                   e.preventDefault();
                   setSelectedTags(tags);
+                }
+                break;
+              case 'd':
+                if (e.ctrlKey) {
+                  e.preventDefault();
+                  clearSelectedTags();
                 }
                 break;
               case 'ArrowDown':

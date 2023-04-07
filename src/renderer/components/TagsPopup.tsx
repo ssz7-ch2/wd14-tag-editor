@@ -1,15 +1,11 @@
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { useEffect, useRef } from 'react';
-import {
-  imagesTagsAtom,
-  popupAtom,
-  selectedImagesAtom,
-} from 'renderer/atoms/primitiveAtom';
+import { popupSetImagesTagsAtom } from 'renderer/atoms/derivedWriteAtom';
+import { popupAtom } from 'renderer/atoms/primitiveAtom';
 import './TagsPopup.css';
 
 function TagsPopup() {
-  const setImagesTags = useSetAtom(imagesTagsAtom);
-  const selectedImages = useAtomValue(selectedImagesAtom);
+  const popupSetImagesTags = useSetAtom(popupSetImagesTagsAtom);
   const [popup, setPopup] = useAtom(popupAtom);
   const ref = useRef<HTMLInputElement>(null);
   console.log('render TagsPopup');
@@ -36,23 +32,7 @@ function TagsPopup() {
               const tagName =
                 document.querySelector<HTMLInputElement>('#tag-input')?.value;
               if (!tagName || tagName.length === 0) return;
-              setImagesTags((prev) => {
-                const updated = { ...prev };
-                if (popup.panel === 'all') {
-                  Object.entries(updated).forEach(([imagePath, tags]) => {
-                    updated[imagePath] = [{ name: tagName, score: 1 }, ...tags];
-                  });
-                } else {
-                  selectedImages.forEach((imagePath) => {
-                    updated[imagePath] = [
-                      { name: tagName, score: 1 },
-                      ...prev[imagePath],
-                    ];
-                  });
-                }
-
-                return updated;
-              });
+              popupSetImagesTags(popup.panel, tagName);
               setPopup((prev) => ({ ...prev, show: false }));
             }}
           >
