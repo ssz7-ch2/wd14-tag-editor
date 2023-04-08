@@ -57,8 +57,6 @@ const TagItem = memo(function TagItem({
 
   const setSelectedTags = useSetAtom(selectedTagsAtom);
 
-  console.log('render tagitem');
-
   useEffect(() => {
     if (focus && ref.current) {
       ref.current.querySelector('input')?.focus();
