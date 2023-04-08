@@ -22,17 +22,13 @@ function TagsPopup() {
   return (
     <>
       {popup.show && (
-        <div
-          id="tags-popup"
-          onClick={() => setPopup((prev) => ({ ...prev, show: false }))}
-        >
+        <div id="tags-popup" onClick={() => setPopup((prev) => ({ ...prev, show: false }))}>
           <form
             id="tags-popup-container"
             onClick={(e) => e.stopPropagation()}
             onSubmit={(e) => {
               e.preventDefault();
-              const tagName =
-                document.querySelector<HTMLInputElement>('#tag-input')?.value;
+              const tagName = document.querySelector<HTMLInputElement>('#tag-input')?.value;
               if (!tagName || tagName.length === 0) return;
               popupSetImagesTags(popup.panel, tagName);
               setPopup((prev) => ({ ...prev, show: false }));
@@ -49,10 +45,7 @@ function TagsPopup() {
             />
             <div>
               <button type="submit">OK</button>
-              <button
-                type="button"
-                onClick={() => setPopup((prev) => ({ ...prev, show: false }))}
-              >
+              <button type="button" onClick={() => setPopup((prev) => ({ ...prev, show: false }))}>
                 Cancel
               </button>
             </div>

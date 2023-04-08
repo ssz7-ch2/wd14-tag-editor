@@ -60,10 +60,7 @@ function GalleryPanel() {
         const updated: string[] = [];
 
         imageList
-          .slice(
-            prevIndex > i ? i : prevIndex,
-            prevIndex > i ? prevIndex + 1 : i + 1
-          )
+          .slice(prevIndex > i ? i : prevIndex, prevIndex > i ? prevIndex + 1 : i + 1)
           .forEach((image) => updated.push(image.path));
 
         if (prevIndex > i) {
@@ -93,12 +90,9 @@ function GalleryPanel() {
         {imageList.map((image, i) => (
           <div
             key={image.path}
-            className={`image-container${
-              selectedImages.includes(image.path) ? ' selected' : ''
-            }`}
+            className={`image-container${selectedImages.includes(image.path) ? ' selected' : ''}`}
             ref={
-              selectedImages.length > 0 &&
-              selectedImages[selectedImages.length - 1] === image.path
+              selectedImages.length > 0 && selectedImages[selectedImages.length - 1] === image.path
                 ? firstSelected
                 : undefined
             }
@@ -106,11 +100,7 @@ function GalleryPanel() {
               handleOnClick(e, i, image.path);
             }}
           >
-            <img
-              src={image.thumbnail}
-              alt=""
-              onDragStart={(e) => e.preventDefault()}
-            />
+            <img src={image.thumbnail} alt="" onDragStart={(e) => e.preventDefault()} />
           </div>
         ))}
       </div>

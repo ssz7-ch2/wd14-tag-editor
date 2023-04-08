@@ -11,12 +11,7 @@
 import { ChildProcessWithoutNullStreams } from 'child_process';
 import { BrowserWindow, app, ipcMain, shell } from 'electron';
 import path from 'path';
-import {
-  handleFilesDrop,
-  handleFilesOpen,
-  handleFolderOpen,
-  saveTags,
-} from './ipc/file';
+import { handleFilesDrop, handleFilesOpen, handleFolderOpen, saveTags } from './ipc/file';
 import { tagImages } from './ipc/tagger';
 import setUp from './python';
 import { settingsStore } from './store';
@@ -90,8 +85,7 @@ if (!lock) {
     sourceMapSupport.install();
   }
 
-  const isDebug =
-    process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+  const isDebug = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
   if (isDebug) {
     require('electron-debug')();

@@ -1,9 +1,6 @@
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { useMemo } from 'react';
-import {
-  clearSelectedTagsAtom,
-  includeTagsAtom,
-} from 'renderer/atoms/derivedWriteAtom';
+import { clearSelectedTagsAtom, includeTagsAtom } from 'renderer/atoms/derivedWriteAtom';
 import {
   selectedTagsAtom,
   selectedTagsPanelAtom,
@@ -61,10 +58,7 @@ function TagsList({ tags, setImagesTags, panel }: TagsListProps) {
           Object.entries(updated).forEach(([imagePath, tags]) => {
             let updatedTags = [...tags];
             updatedTags = updatedTags.filter(
-              (tag) =>
-                !selectedTags.some(
-                  (selectedTag) => selectedTag.name === tag.name
-                )
+              (tag) => !selectedTags.some((selectedTag) => selectedTag.name === tag.name)
             );
             updated[imagePath] = updatedTags;
           });
@@ -95,8 +89,7 @@ function TagsList({ tags, setImagesTags, panel }: TagsListProps) {
           tag={tag}
           panel={panel}
           style={{
-            color:
-              tag.score < tagThreshold ? 'hsla(0, 100%, 100%, 0.4)' : undefined,
+            color: tag.score < tagThreshold ? 'hsla(0, 100%, 100%, 0.4)' : undefined,
           }}
           onEdit={(value) => {
             setImagesTags((prev) => {
@@ -127,16 +120,11 @@ function TagsList({ tags, setImagesTags, panel }: TagsListProps) {
                 return [...prev, tag];
               }
               if (e.shiftKey) {
-                const prevIndex = tags.findIndex(
-                  (t) => t === prev[prev.length - 1]
-                );
+                const prevIndex = tags.findIndex((t) => t === prev[prev.length - 1]);
                 const addTags: TagType[] = [];
 
                 tags
-                  .slice(
-                    prevIndex > i ? i : prevIndex,
-                    prevIndex > i ? prevIndex + 1 : i + 1
-                  )
+                  .slice(prevIndex > i ? i : prevIndex, prevIndex > i ? prevIndex + 1 : i + 1)
                   .forEach((t) => {
                     if (!prev.includes(t)) {
                       addTags.push(t);

@@ -8,12 +8,7 @@ import {
   tagSelectedImagesAtom,
 } from 'renderer/atoms/derivedWriteAtom';
 import { imagesAtom, selectedImagesAtom } from 'renderer/atoms/primitiveAtom';
-import {
-  ContextMenuIds,
-  ImageFileInfo,
-  Images,
-  TagData,
-} from '../../../types/types';
+import { ContextMenuIds, ImageFileInfo, Images, TagData } from '../../../types/types';
 import './ImagePanel.css';
 
 const menuId: ContextMenuIds = 'ImagePanel';
@@ -61,10 +56,8 @@ function ImagePanel() {
         onDragStart={(e) => e.preventDefault()}
         onDoubleClick={() => {
           window.electron.ipcRenderer.sendMessage('dialog:openFiles');
-          window.electron.ipcRenderer.once(
-            'dialog:openFiles',
-            (images, imagesTags) =>
-              setImagesData(images as Images, imagesTags as TagData)
+          window.electron.ipcRenderer.once('dialog:openFiles', (images, imagesTags) =>
+            setImagesData(images as Images, imagesTags as TagData)
           );
         }}
         onContextMenu={(e) => show({ event: e })}
@@ -82,10 +75,8 @@ function ImagePanel() {
           }
 
           window.electron.ipcRenderer.sendMessage('task:loadImages', filePaths);
-          window.electron.ipcRenderer.once(
-            'task:loadImages',
-            (images, imagesTags) =>
-              setImagesData(images as Images, imagesTags as TagData)
+          window.electron.ipcRenderer.once('task:loadImages', (images, imagesTags) =>
+            setImagesData(images as Images, imagesTags as TagData)
           );
         }}
       >
@@ -95,6 +86,8 @@ function ImagePanel() {
           <img src={displayedImage.src} alt="" />
         )}
       </div>
+
+      {/* TODO: right click open folder option, refactor context menu to AppContainer */}
 
       <ContextMenu id={menuId}>
         <Item onClick={tagSelectedImages}>Tag Selected Images</Item>

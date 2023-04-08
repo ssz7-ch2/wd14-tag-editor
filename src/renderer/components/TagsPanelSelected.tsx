@@ -1,9 +1,6 @@
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { tagsListSelectedAtom } from 'renderer/atoms/derivedReadAtom';
-import {
-  imagesTagsAtom,
-  selectedImagesAtom,
-} from 'renderer/atoms/primitiveAtom';
+import { imagesTagsAtom, selectedImagesAtom } from 'renderer/atoms/primitiveAtom';
 import { TagData } from '../../../types/types';
 import TagsList from './TagsList';
 
@@ -18,11 +15,9 @@ const setSelectedImagesTagsAtom = atom(
     });
     const updated = { ...imagesTags };
     if (typeof update === 'function') {
-      Object.entries(update(selectedImagesTags)).forEach(
-        ([imagePath, tags]) => {
-          updated[imagePath] = tags;
-        }
-      );
+      Object.entries(update(selectedImagesTags)).forEach(([imagePath, tags]) => {
+        updated[imagePath] = tags;
+      });
     } else {
       Object.entries(update).forEach(([imagePath, tags]) => {
         updated[imagePath] = tags;
@@ -39,11 +34,7 @@ function TagsPanelSelected() {
   return (
     <div className="panel">
       <h2 className="panel-header">Selected Image Tags</h2>
-      <TagsList
-        tags={tagsList}
-        setImagesTags={setSelectedImagesTags}
-        panel="selected"
-      />
+      <TagsList tags={tagsList} setImagesTags={setSelectedImagesTags} panel="selected" />
     </div>
   );
 }

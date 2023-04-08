@@ -2,25 +2,14 @@ import { BrowserWindow, dialog } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
-import {
-  ImageFileInfo,
-  Images,
-  SaveTagsType,
-  TagData,
-  TagType,
-} from '../../../types/types';
+import { ImageFileInfo, Images, SaveTagsType, TagData, TagType } from '../../../types/types';
 import { Task } from '../task';
 import { isValidImage } from '../util';
 
-const getFileInfo = async (
-  filePath: string
-): Promise<[ImageFileInfo, TagType[]]> => {
+const getFileInfo = async (filePath: string): Promise<[ImageFileInfo, TagType[]]> => {
   const stats = await fs.promises.stat(filePath);
 
-  const tagsFilePath = path.join(
-    path.dirname(filePath),
-    `${path.parse(filePath).name}.txt`
-  );
+  const tagsFilePath = path.join(path.dirname(filePath), `${path.parse(filePath).name}.txt`);
   let tags: TagType[] = [];
   try {
     const content = await fs.promises.readFile(tagsFilePath, 'utf-8');
@@ -40,31 +29,21 @@ const getFileInfo = async (
   const MAX_DIMENSIONS = 5000000;
   if (stats.size > MAX_SIZE) {
     let resizeImage = sharpImage;
-    if (
-      metadata.width &&
-      metadata.height &&
-      metadata.width * metadata.height > MAX_DIMENSIONS
-    ) {
+    if (metadata.width && metadata.height && metadata.width * metadata.height > MAX_DIMENSIONS) {
       resizeImage = sharpImage.resize({
         width: Math.floor(
-          metadata.width /
-            Math.sqrt((metadata.width * metadata.height) / MAX_DIMENSIONS)
+          metadata.width / Math.sqrt((metadata.width * metadata.height) / MAX_DIMENSIONS)
         ),
       });
     }
-    const buffer = await resizeImage
-      .toFormat('jpg')
-      .jpeg({ quality: 80, force: true })
-      .toBuffer();
+    const buffer = await resizeImage.toFormat('jpg').jpeg({ quality: 80, force: true }).toBuffer();
     const imageData = buffer.toString('base64');
     src = `data:image/jpg;base64,${imageData}`;
   }
 
   const buffer = await sharpImage.resize({ width: 100 }).toBuffer();
   const imageData = buffer.toString('base64');
-  const base64 = `data:image/${path
-    .extname(filePath)
-    .replace('.', '')};base64,${imageData}`;
+  const base64 = `data:image/${path.extname(filePath).replace('.', '')};base64,${imageData}`;
 
   return [
     {
@@ -107,10 +86,7 @@ export async function handleFilesOpen(
     images[image.path] = image;
     imagesTags[image.path] = tags;
     count += 1;
-    task.update(
-      `Loading images ${count}/${filePaths.length}`,
-      count / filePaths.length
-    );
+    task.update(`Loading images ${count}/${filePaths.length}`, count / filePaths.length);
   });
   await Promise.all(res);
 
@@ -151,10 +127,7 @@ export async function handleFolderOpen(
     images[image.path] = image;
     imagesTags[image.path] = tags;
     count += 1;
-    task.update(
-      `Loading images ${count}/${imageNames.length}`,
-      count / imageNames.length
-    );
+    task.update(`Loading images ${count}/${imageNames.length}`, count / imageNames.length);
   });
 
   await Promise.all(res);
@@ -181,20 +154,14 @@ export async function handleFilesDrop(
     images[image.path] = image;
     imagesTags[image.path] = tags;
     count += 1;
-    task.update(
-      `Loading images ${count}/${filePaths.length}`,
-      count / filePaths.length
-    );
+    task.update(`Loading images ${count}/${filePaths.length}`, count / filePaths.length);
   });
   await Promise.all(res);
   task.end(`Loaded ${count} images`);
   return [images, imagesTags];
 }
 
-export async function saveTags(
-  mainWindow: BrowserWindow | null,
-  imagesTags: SaveTagsType
-) {
+export async function saveTags(mainWindow: BrowserWindow | null, imagesTags: SaveTagsType) {
   if (mainWindow == null || imagesTags.length === 0) return;
   const task = new Task();
   task.start(`Saving tags 0/${imagesTags.length}`);
@@ -205,10 +172,7 @@ export async function saveTags(
       `${path.basename(image.path, path.extname(image.path))}.txt`
     );
     try {
-      const existingTagsFile = await fs.promises.readFile(
-        tagsFilePath,
-        'utf-8'
-      );
+      const existingTagsFile = await fs.promises.readFile(tagsFilePath, 'utf-8');
       const existingTags = existingTagsFile
         .split(',')
         .map((tag) => tag.trim())
@@ -219,10 +183,7 @@ export async function saveTags(
     }
     await fs.promises.writeFile(tagsFilePath, image.tags.join(', '), 'utf-8');
     count += 1;
-    task.update(
-      `Saving Tags ${count}/${imagesTags.length}`,
-      count / imagesTags.length
-    );
+    task.update(`Saving Tags ${count}/${imagesTags.length}`, count / imagesTags.length);
   });
   await Promise.all(res);
   task.end(`Saved Tags`);

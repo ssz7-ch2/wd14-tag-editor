@@ -31,36 +31,21 @@ function TagsMenu() {
 
   return (
     <div id="tags-menu">
-      <MenuIcon
-        icon={faPlus}
-        text="Add Tag"
-        color="rgb(116, 230, 101)"
-        onClick={addTags}
-      />
+      <MenuIcon icon={faPlus} text="Add Tag" color="rgb(116, 230, 101)" onClick={addTags} />
       <MenuIcon
         icon={faPlusCircle}
         text="Add To All"
         color="rgb(116, 230, 101)"
         onClick={addTagsAll}
       />
-      <MenuIcon
-        icon={faMinus}
-        text="Remove Tag"
-        color="rgb(236, 95, 100)"
-        onClick={removeTags}
-      />
+      <MenuIcon icon={faMinus} text="Remove Tag" color="rgb(236, 95, 100)" onClick={removeTags} />
       <MenuIcon
         icon={faCircleMinus}
         text="Remove From All"
         color="rgb(236, 95, 100)"
         onClick={removeTagsAll}
       />
-      <MenuIcon
-        icon={faFilter}
-        text="Filter"
-        color="rgb(101, 178, 230)"
-        onClick={filter}
-      />
+      <MenuIcon icon={faFilter} text="Filter" color="rgb(101, 178, 230)" onClick={filter} />
       <MenuIcon
         icon={faFilterCircleXmark}
         text="Remove Filter"

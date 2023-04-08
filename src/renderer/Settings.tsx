@@ -26,16 +26,11 @@ function Settings() {
       onSubmit={(e) => {
         e.preventDefault();
         settings.forEach((name) => {
-          const element = e.currentTarget.elements.namedItem(
-            name
-          ) as HTMLInputElement;
+          const element = e.currentTarget.elements.namedItem(name) as HTMLInputElement;
 
           switch (name) {
             case 'taggerModel':
-              window.electron.store.set(
-                name,
-                element.value as storeType['taggerModel']
-              );
+              window.electron.store.set(name, element.value as storeType['taggerModel']);
               break;
             case 'batchSize':
               window.electron.store.set(name, parseInt(element.value));
@@ -60,11 +55,7 @@ function Settings() {
       <h1>Settings</h1>
       <div className="option-h">
         <p>Tagger Model</p>
-        <Select
-          options={taggerModels}
-          initial={taggerModel}
-          name="taggerModel"
-        />
+        <Select options={taggerModels} initial={taggerModel} name="taggerModel" />
       </div>
       <div className="option-h">
         <p>Use Tensorflow (requires restart)</p>
@@ -72,25 +63,11 @@ function Settings() {
       </div>
       <div className="option">
         <p>Batch Size</p>
-        <Slider
-          min={1}
-          max={20}
-          step={1}
-          initial={batchSize}
-          decimals={0}
-          name="batchSize"
-        />
+        <Slider min={1} max={20} step={1} initial={batchSize} decimals={0} name="batchSize" />
       </div>
       <div className="option">
         <p>Threshold</p>
-        <Slider
-          min={0.01}
-          max={1}
-          step={0.01}
-          initial={threshold}
-          decimals={2}
-          name="threshold"
-        />
+        <Slider min={0.01} max={1} step={0.01} initial={threshold} decimals={2} name="threshold" />
       </div>
       <div className="option">
         <p>Threshold Low</p>

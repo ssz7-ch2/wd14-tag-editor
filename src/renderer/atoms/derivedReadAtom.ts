@@ -1,12 +1,7 @@
 import { atom } from 'jotai';
 import { sortTagName, sortTagScore } from 'renderer/utils';
 import { ImageFileInfo } from '../../../types/types';
-import {
-  filterTagsAtom,
-  imagesAtom,
-  imagesTagsAtom,
-  selectedImagesAtom,
-} from './primitiveAtom';
+import { filterTagsAtom, imagesAtom, imagesTagsAtom, selectedImagesAtom } from './primitiveAtom';
 
 export const filteredImagesAtom = atom<ImageFileInfo[]>((get) => {
   const images = get(imagesAtom);

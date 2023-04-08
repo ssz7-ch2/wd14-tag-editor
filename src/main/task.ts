@@ -51,9 +51,7 @@ export class Task {
     if (Task.#runningTasks.length === 0) {
       Task.#sendStatus(this.status);
     } else {
-      Task.#sendStatus(
-        Task.#runningTasks[Task.#runningTasks.length - 1].status
-      );
+      Task.#sendStatus(Task.#runningTasks[Task.#runningTasks.length - 1].status);
     }
   }
 
@@ -63,18 +61,14 @@ export class Task {
 
   static sendLatest() {
     if (Task.#runningTasks.length > 0) {
-      Task.#sendStatus(
-        Task.#runningTasks[Task.#runningTasks.length - 1].status
-      );
+      Task.#sendStatus(Task.#runningTasks[Task.#runningTasks.length - 1].status);
     } else {
       Task.#sendStatus(Task.#defaultStatus);
     }
   }
 
   static async cancelAll() {
-    const cancellable = Task.#runningTasks.filter(
-      (task) => task.cancel != null
-    );
+    const cancellable = Task.#runningTasks.filter((task) => task.cancel != null);
     if (cancellable.length > 0) {
       const res = cancellable.map(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

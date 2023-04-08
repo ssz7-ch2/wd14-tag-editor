@@ -1,16 +1,6 @@
 import { atom, useAtomValue, useSetAtom } from 'jotai';
-import {
-  ComponentProps,
-  memo,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import {
-  selectedTagsAtom,
-  selectedTagsPanelAtom,
-} from 'renderer/atoms/primitiveAtom';
+import { ComponentProps, memo, useEffect, useMemo, useRef, useState } from 'react';
+import { selectedTagsAtom, selectedTagsPanelAtom } from 'renderer/atoms/primitiveAtom';
 import { TagType, TagsPanelType } from '../../../types/types';
 import './TagItem.css';
 

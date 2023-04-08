@@ -11,10 +11,8 @@ function SelectImages() {
       id="select-images"
       onClick={() => {
         window.electron.ipcRenderer.sendMessage('dialog:openFiles');
-        window.electron.ipcRenderer.once(
-          'dialog:openFiles',
-          (images, imagesTags) =>
-            setImagesData(images as Images, imagesTags as TagData)
+        window.electron.ipcRenderer.once('dialog:openFiles', (images, imagesTags) =>
+          setImagesData(images as Images, imagesTags as TagData)
         );
       }}
       onDragOver={(e) => e.preventDefault()}
@@ -30,10 +28,8 @@ function SelectImages() {
           filePaths = [...e.dataTransfer.files].map((file) => file.path);
         }
         window.electron.ipcRenderer.sendMessage('task:loadImages', filePaths);
-        window.electron.ipcRenderer.once(
-          'task:loadImages',
-          (images, imagesTags) =>
-            setImagesData(images as Images, imagesTags as TagData)
+        window.electron.ipcRenderer.once('task:loadImages', (images, imagesTags) =>
+          setImagesData(images as Images, imagesTags as TagData)
         );
       }}
       aria-hidden="true"

@@ -5,10 +5,7 @@ import './TaskStatus.css';
 function TaskStatus() {
   const taskStatus = useAtomValue(taskStatusAtom);
   return (
-    <div
-      id="task-status"
-      className={taskStatus.status === 'Processing' ? 'processing' : undefined}
-    >
+    <div id="task-status" className={taskStatus.status === 'Processing' ? 'processing' : undefined}>
       <div
         id="task-progress"
         style={{

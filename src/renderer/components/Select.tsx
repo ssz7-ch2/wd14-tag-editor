@@ -13,11 +13,7 @@ function Select({ options, initial, name }: DropdownProps) {
   const [value, setValue] = useState(initial);
   return (
     <div className="dropdown-container">
-      <ReactDropdown
-        options={options}
-        value={value}
-        onChange={(e) => setValue(e.value)}
-      />
+      <ReactDropdown options={options} value={value} onChange={(e) => setValue(e.value)} />
       <input
         type="text"
         name={name}

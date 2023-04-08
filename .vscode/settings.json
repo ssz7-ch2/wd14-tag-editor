@@ -27,5 +27,9 @@
     "package-lock.json": true,
     "*.{css,sass,scss}.d.ts": true
   },
-  "python.defaultInterpreterPath": "../python/venv/Scripts/python.exe"
+  "python.defaultInterpreterPath": "../python/venv/Scripts/python.exe",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "editor.formatOnSave": true,
 }

@@ -1,17 +1,8 @@
 import { atom } from 'jotai';
 import { displayedImageAtom } from 'renderer/components/ImagePanel';
 import { sortTagScore } from 'renderer/utils';
-import {
-  Images,
-  SaveTagsType,
-  TagData,
-  TagsPanelType,
-} from '../../../types/types';
-import {
-  filteredImagesAtom,
-  tagsListAllAtom,
-  tagsListSelectedAtom,
-} from './derivedReadAtom';
+import { Images, SaveTagsType, TagData, TagsPanelType } from '../../../types/types';
+import { filteredImagesAtom, tagsListAllAtom, tagsListSelectedAtom } from './derivedReadAtom';
 import {
   filterTagsAtom,
   imagesAtom,
@@ -100,8 +91,7 @@ export const removeTagsAtom = atom(null, (get, set) => {
     selectedImages.forEach((imagePath) => {
       let tags = [...updated[imagePath]];
       tags = tags.filter(
-        (tag) =>
-          !selectedTags.some((selectedTag) => selectedTag.name === tag.name)
+        (tag) => !selectedTags.some((selectedTag) => selectedTag.name === tag.name)
       );
       updated[imagePath] = tags;
     });
@@ -119,8 +109,7 @@ export const removeTagsAllAtom = atom(null, (get, set) => {
     Object.entries(updated).forEach(([imagePath, tags]) => {
       let updatedTags = [...tags];
       updatedTags = updatedTags.filter(
-        (tag) =>
-          !selectedTags.some((selectedTag) => selectedTag.name === tag.name)
+        (tag) => !selectedTags.some((selectedTag) => selectedTag.name === tag.name)
       );
       updated[imagePath] = updatedTags;
     });
@@ -133,10 +122,7 @@ export const filterAtom = atom(null, (get, set) => {
   const updatedFilter = new Set(selectedTags.map((tag) => tag.name));
   let update = true;
   set(filterTagsAtom, (prev) => {
-    if (
-      prev.size === updatedFilter.size &&
-      [...prev].every((tag) => updatedFilter.has(tag))
-    ) {
+    if (prev.size === updatedFilter.size && [...prev].every((tag) => updatedFilter.has(tag))) {
       update = false;
       return prev;
     }
@@ -150,19 +136,14 @@ export const filterAtom = atom(null, (get, set) => {
         imagesTags[imagePath].some((tag) => tag.name === filterTag)
       )
     );
-    if (
-      updated.length === prev.length &&
-      updated.every((imagePath) => prev.includes(imagePath))
-    ) {
+    if (updated.length === prev.length && updated.every((imagePath) => prev.includes(imagePath))) {
       return prev;
     }
     if (updated.length > 0) {
       return updated;
     } else {
       const first = Object.entries(imagesTags).find(([, tags]) =>
-        [...updatedFilter].every((filterTag) =>
-          tags.some((tag) => tag.name === filterTag)
-        )
+        [...updatedFilter].every((filterTag) => tags.some((tag) => tag.name === filterTag))
       );
       if (first) {
         return [first[0]];
@@ -195,9 +176,7 @@ export const includeTagsAtom = atom(null, (get, set) => {
   if (selectedTags.length === 0 || selectedImages.length === 0) return;
 
   let tagsList =
-    selectedTagsPanel === 'selected'
-      ? get(tagsListSelectedAtom)
-      : get(tagsListAllAtom);
+    selectedTagsPanel === 'selected' ? get(tagsListSelectedAtom) : get(tagsListAllAtom);
 
   set(imagesTagsAtom, (prev) => {
     if (targetImages === undefined) {
@@ -224,9 +203,7 @@ export const includeTagsAtom = atom(null, (get, set) => {
     return updated;
   });
 
-  const last = selectedTags.some(
-    (tag) => tag.name === tagsList[tagsList.length - 1].name
-  );
+  const last = selectedTags.some((tag) => tag.name === tagsList[tagsList.length - 1].name);
   for (let i = tagsList.length - 1; i >= 0; i--) {
     if (last && !selectedTags.some((tag) => tag.name === tagsList[i].name)) {
       set(selectedTagsAtom, [tagsList[i]]);
@@ -252,19 +229,14 @@ export const tagAllImagesAtom = atom(null, (get, set) => {
     .map(([imagePath]) => imagePath);
   if (untagged.length === 0) return;
 
-  window.electron.ipcRenderer.sendMessage(
-    'task:tagImages',
-    untagged as string[]
-  );
+  window.electron.ipcRenderer.sendMessage('task:tagImages', untagged as string[]);
   window.electron.ipcRenderer.once('task:tagImages', (arg) => {
     const tagData = arg as TagData;
     set(imagesTagsAtom, (prev) => {
       const updated = { ...prev };
       Object.entries(tagData).forEach(([imagePath, tags]) => {
         const prevTags = updated[imagePath];
-        updated[imagePath] = tags.concat(
-          prevTags.filter((tag) => !tags.includes(tag))
-        );
+        updated[imagePath] = tags.concat(prevTags.filter((tag) => !tags.includes(tag)));
       });
       return updated;
     });
@@ -272,19 +244,14 @@ export const tagAllImagesAtom = atom(null, (get, set) => {
 });
 
 export const tagSelectedImagesAtom = atom(null, (get, set) => {
-  window.electron.ipcRenderer.sendMessage(
-    'task:tagImages',
-    get(selectedImagesAtom) as string[]
-  );
+  window.electron.ipcRenderer.sendMessage('task:tagImages', get(selectedImagesAtom) as string[]);
   window.electron.ipcRenderer.once('task:tagImages', (arg) => {
     const tagData = arg as TagData;
     set(imagesTagsAtom, (prev) => {
       const updated = { ...prev };
       Object.entries(tagData).forEach(([imagePath, tags]) => {
         const prevTags = updated[imagePath];
-        updated[imagePath] = tags.concat(
-          prevTags.filter((tag) => !tags.includes(tag))
-        );
+        updated[imagePath] = tags.concat(prevTags.filter((tag) => !tags.includes(tag)));
       });
       return updated;
     });
@@ -404,39 +371,34 @@ export const removeAllImagesAtom = atom(null, (_get, set) => {
   set(filterTagsAtom, new Set<string>());
 });
 
-export const changeSelectedImagesAtom = atom(
-  null,
-  (get, set, value: number, shift = false) => {
-    const displayedImage = get(displayedImageAtom);
-    const imageList = get(filteredImagesAtom);
-    if (!displayedImage) {
-      if (imageList.length > 0) set(selectedImagesAtom, [imageList[0].path]);
-      return;
-    }
-
-    const selectedImages = get(selectedImagesAtom);
-
-    const index = imageList.findIndex(
-      (image) => image.path === displayedImage.path
-    );
-    if (index === -1) return;
-    const newIndex = Math.max(Math.min(index + value, imageList.length - 1), 0);
-    const newImagePath = imageList[newIndex].path;
-    if (shift) {
-      if (newIndex === index) return;
-      if (selectedImages.includes(newImagePath)) {
-        set(selectedImagesAtom, (prev) =>
-          prev.filter((imagePath) => imagePath !== displayedImage.path)
-        );
-      } else {
-        set(selectedImagesAtom, (prev) => [...prev, newImagePath]);
-      }
-    } else {
-      if (newIndex === index && selectedImages.length === 1) return;
-      set(selectedImagesAtom, [newImagePath]);
-    }
+export const changeSelectedImagesAtom = atom(null, (get, set, value: number, shift = false) => {
+  const displayedImage = get(displayedImageAtom);
+  const imageList = get(filteredImagesAtom);
+  if (!displayedImage) {
+    if (imageList.length > 0) set(selectedImagesAtom, [imageList[0].path]);
+    return;
   }
-);
+
+  const selectedImages = get(selectedImagesAtom);
+
+  const index = imageList.findIndex((image) => image.path === displayedImage.path);
+  if (index === -1) return;
+  const newIndex = Math.max(Math.min(index + value, imageList.length - 1), 0);
+  const newImagePath = imageList[newIndex].path;
+  if (shift) {
+    if (newIndex === index) return;
+    if (selectedImages.includes(newImagePath)) {
+      set(selectedImagesAtom, (prev) =>
+        prev.filter((imagePath) => imagePath !== displayedImage.path)
+      );
+    } else {
+      set(selectedImagesAtom, (prev) => [...prev, newImagePath]);
+    }
+  } else {
+    if (newIndex === index && selectedImages.length === 1) return;
+    set(selectedImagesAtom, [newImagePath]);
+  }
+});
 
 export const selectAllFilteredImagesAtom = atom(null, (get, set) => {
   const imageList = get(filteredImagesAtom);
