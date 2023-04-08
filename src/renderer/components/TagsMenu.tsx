@@ -21,7 +21,6 @@ import MenuIcon from './MenuIcon';
 import './TagsMenu.css';
 
 function TagsMenu() {
-  console.log('render TagsMenu');
   const addTags = useSetAtom(addTagsAtom);
   const addTagsAll = useSetAtom(addTagsAllAtom);
   const removeTags = useSetAtom(removeTagsAtom);

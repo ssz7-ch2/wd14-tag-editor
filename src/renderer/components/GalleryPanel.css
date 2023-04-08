@@ -24,4 +24,6 @@
 
 .selected img {
   filter: brightness(1) !important;
+  outline: 4px solid hsl(var(--layer-4));
+  outline-offset: -4px;
 }

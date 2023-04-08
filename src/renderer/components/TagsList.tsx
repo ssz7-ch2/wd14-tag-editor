@@ -1,6 +1,9 @@
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { useMemo } from 'react';
-import { clearSelectedTagsAtom } from 'renderer/atoms/derivedWriteAtom';
+import {
+  clearSelectedTagsAtom,
+  includeTagsAtom,
+} from 'renderer/atoms/derivedWriteAtom';
 import {
   selectedTagsAtom,
   selectedTagsPanelAtom,
@@ -16,10 +19,13 @@ type TagsListProps = {
   panel: TagsPanelType;
 };
 
+// TODO: copy tags to clipboard on ctrl + c
+
 function TagsList({ tags, setImagesTags, panel }: TagsListProps) {
   const setSelectedTags = useSetAtom(selectedTagsAtom);
   const setSelectedTagsPanel = useSetAtom(selectedTagsPanelAtom);
   const clearSelectedTags = useSetAtom(clearSelectedTagsAtom);
+  const includeTags = useSetAtom(includeTagsAtom);
 
   const tagThreshold = useAtomValue(tagThresholdAtom);
 
@@ -66,7 +72,6 @@ function TagsList({ tags, setImagesTags, panel }: TagsListProps) {
         });
 
         if (newSelectedTag) {
-          console.log(newSelectedTag);
           set(selectedTagsAtom, [newSelectedTag]);
         } else {
           set(selectedTagsAtom, []);
@@ -84,7 +89,10 @@ function TagsList({ tags, setImagesTags, panel }: TagsListProps) {
           key={tag.name}
           tag={tag}
           panel={panel}
-          style={{ color: tag.score < tagThreshold ? '#AAA' : undefined }}
+          style={{
+            color:
+              tag.score < tagThreshold ? 'hsla(0, 100%, 100%, 0.4)' : undefined,
+          }}
           onEdit={(value) => {
             setImagesTags((prev) => {
               const updated = { ...prev };
@@ -143,25 +151,35 @@ function TagsList({ tags, setImagesTags, panel }: TagsListProps) {
               case 'A':
                 if (e.ctrlKey) {
                   e.preventDefault();
+                  e.stopPropagation();
                   setSelectedTags(tags);
                 }
                 break;
               case 'd':
                 if (e.ctrlKey) {
                   e.preventDefault();
+                  e.stopPropagation();
                   clearSelectedTags();
                 }
                 break;
+              case 'i':
+                e.preventDefault();
+                e.stopPropagation();
+                includeTags();
+                break;
               case 'ArrowDown':
                 e.preventDefault();
+                e.stopPropagation();
                 setSelectedTags([tags[Math.min(tags.length - 1, i + 1)]]);
                 break;
               case 'ArrowUp':
                 e.preventDefault();
+                e.stopPropagation();
                 setSelectedTags([tags[Math.max(0, i - 1)]]);
                 break;
               case 'Delete':
                 e.preventDefault();
+                e.stopPropagation();
                 deleteTags(tags);
                 break;
               default:

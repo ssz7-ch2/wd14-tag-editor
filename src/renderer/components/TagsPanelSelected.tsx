@@ -33,7 +33,6 @@ const setSelectedImagesTagsAtom = atom(
 );
 
 function TagsPanelSelected() {
-  console.log('render TagsPanelSelected');
   const tagsList = useAtomValue(tagsListSelectedAtom);
   const setSelectedImagesTags = useSetAtom(setSelectedImagesTagsAtom);
 

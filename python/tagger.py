@@ -78,6 +78,7 @@ class Tagger:
     def __init__(self, model_dir, model_name):
         self.model_path = model_dir
         self.model_name = model_name
+        self.loaded = False
     def load(self):
         try:
             self.model = InferenceSession(os.path.join(self.model_path, ONNX_FILE), providers=Tagger.providers)
@@ -86,9 +87,11 @@ class Tagger:
             self.model = InferenceSession(os.path.join(self.model_path, ONNX_FILE), providers=providers)
         _, height, _, _ = self.model.get_inputs()[0].shape
         self.height = height
+        self.loaded = True
 
     def load_keras(self):
         self.model = load_model(self.model_path)
+        self.loaded = True
 
     def tag_image(self, image_path, threshold_low):
         image = preprocess_image(image_path, self.height)
@@ -109,6 +112,10 @@ class Tagger:
 
     def interrogate(self, image_paths, threshold_low):
         global stop_process
+
+        if self.loaded == False:
+            self.load()
+
         stdout(f"{start_prefix}Tagging images 0/{len(image_paths)}\n")
         image_map = {}
         count = 0
@@ -125,6 +132,10 @@ class Tagger:
 
     def interrogate_keras(self, image_paths, threshold_low, batch_size = 8):
         global stop_process
+
+        if self.loaded == False:
+            self.load_keras()
+
         stdout(f"{start_prefix}Tagging images 0/{len(image_paths)}\n")
 
         def run_batch(batch_images, image_map):
@@ -238,7 +249,8 @@ if __name__ == "__main__":
     # taggers["vit"] = Tagger(os.path.join(TAGGER_DIR, "vit"), "vit")
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--use_tensorflow", action='store_true')
+    parser.add_argument("--use_tensorflow", action="store_true")
+    parser.add_argument("--model", type=str, default="swinv2")
 
     args = parser.parse_args()
 
@@ -258,9 +270,9 @@ if __name__ == "__main__":
         Tagger.character_index = next(i for i, row in enumerate(rows) if row[2] == '4')
 
         if use_tensorflow:
-            load_keras(taggers["swinv2"])
+            load_keras(taggers[args.model])
         else:
-            load(taggers["swinv2"])
+            load(taggers["swinv2"], taggers["convnextv2"], taggers["convnext"])
 
         app.run(host="127.0.0.1", port=5000)
     except Exception as e:

@@ -4,7 +4,6 @@ import { imagesTagsAtom } from 'renderer/atoms/primitiveAtom';
 import TagsList from './TagsList';
 
 function TagsPanelAll() {
-  console.log('render TagsPanelAll');
   const tagsList = useAtomValue(tagsListAllAtom);
   const setImagesTags = useSetAtom(imagesTagsAtom);
   return (

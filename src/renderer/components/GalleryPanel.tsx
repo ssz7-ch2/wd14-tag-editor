@@ -5,6 +5,7 @@ import { filteredImagesAtom } from 'renderer/atoms/derivedReadAtom';
 import { selectedImagesAtom } from 'renderer/atoms/primitiveAtom';
 import { ContextMenuIds } from '../../../types/types';
 import './GalleryPanel.css';
+import { displayedImageAtom } from './ImagePanel';
 
 const menuId: ContextMenuIds = 'ImagePanel';
 
@@ -13,6 +14,7 @@ function GalleryPanel() {
   const [prevIndex, setPrevIndex] = useState(0);
 
   const imageList = useAtomValue(filteredImagesAtom);
+  const displayedImage = useAtomValue(displayedImageAtom);
 
   const firstSelected = useRef<HTMLDivElement>(null);
 
@@ -20,18 +22,18 @@ function GalleryPanel() {
     id: menuId,
   });
 
-  console.log('render GalleryPanel');
-
-  // TODO: on right click gallery, option to clear images
   useEffect(() => {
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       firstSelected.current?.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
         inline: 'nearest',
       });
     }, 50);
-  }, [imageList]);
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [displayedImage, imageList]);
 
   const handleOnClick = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,

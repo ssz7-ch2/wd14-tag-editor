@@ -1,6 +1,12 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import Split from 'react-split';
 import './AppContainer.css';
+import {
+  changeSelectedImagesAtom,
+  saveTagsAtom,
+  tagAllImagesAtom,
+  tagSelectedImagesAtom,
+} from './atoms/derivedWriteAtom';
 import { imagesAtom, popupAtom } from './atoms/primitiveAtom';
 import GalleryPanel from './components/GalleryPanel';
 import ImagePanel from './components/ImagePanel';
@@ -11,7 +17,10 @@ import TagsPanel from './components/TagsPanel';
 function AppContainer() {
   const images = useAtomValue(imagesAtom);
   const setPopup = useSetAtom(popupAtom);
-  console.log('render AppContainer');
+  const changeSelectedImages = useSetAtom(changeSelectedImagesAtom);
+  const tagAllImages = useSetAtom(tagAllImagesAtom);
+  const tagSelectedImages = useSetAtom(tagSelectedImagesAtom);
+  const saveTags = useSetAtom(saveTagsAtom);
 
   return (
     <div
@@ -51,6 +60,21 @@ function AppContainer() {
               });
             }
             break;
+          case 'S':
+            if (e.shiftKey && e.altKey) {
+              e.preventDefault();
+              tagAllImages();
+            } else if (e.altKey) {
+              e.preventDefault();
+              tagSelectedImages();
+            }
+            break;
+          case 'D':
+            if (e.altKey) {
+              e.preventDefault();
+              saveTags();
+            }
+            break;
           case 'ESCAPE':
             e.preventDefault();
             setPopup((prev) => {
@@ -59,6 +83,24 @@ function AppContainer() {
               }
               return prev;
             });
+            break;
+          case 'ARROWLEFT':
+          case 'ARROWUP':
+            e.preventDefault();
+            if (e.shiftKey || e.ctrlKey) {
+              changeSelectedImages(-1, true);
+            } else {
+              changeSelectedImages(-1);
+            }
+            break;
+          case 'ARROWRIGHT':
+          case 'ARROWDOWN':
+            e.preventDefault();
+            if (e.shiftKey || e.ctrlKey) {
+              changeSelectedImages(1, true);
+            } else {
+              changeSelectedImages(1);
+            }
             break;
           default:
             break;

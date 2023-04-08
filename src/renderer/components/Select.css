@@ -1,0 +1,41 @@
+.dropdown-container input {
+  display: none;
+}
+
+.Dropdown-root {
+  width: 120px;
+}
+
+.Dropdown-control {
+  padding: 4px 24px 4px 10px;
+  border-radius: var(--radius-0);
+  transition: none;
+  background-color: hsl(var(--layer-1));
+  color: inherit;
+  border: 2px solid hsl(var(--layer-3));
+}
+
+.Dropdown-root.is-open .Dropdown-control {
+  border-radius: var(--radius-0) var(--radius-0) 0px 0px;
+}
+
+.Dropdown-menu {
+  background-color: hsl(var(--layer-1));
+  color: inherit;
+  border-radius: 0px 0px var(--radius-0) var(--radius-0);
+  border: 2px solid hsl(var(--layer-3));
+}
+
+.Dropdown-option {
+  color: inherit;
+}
+
+.Dropdown-option.is-selected {
+  background-color: hsl(var(--layer-2));
+  color: inherit;
+}
+
+.Dropdown-option:hover {
+  background-color: hsl(var(--layer-2));
+  color: inherit;
+}

@@ -1,6 +1,7 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { storeType } from './store';
 
 export type Channels =
   | 'dialog:openFolder'
@@ -9,7 +10,9 @@ export type Channels =
   | 'task:tagImages'
   | 'task:loadImages'
   | 'task:cancel'
-  | 'task:saveTags';
+  | 'task:saveTags'
+  | 'openSettings'
+  | 'setTagThreshold';
 
 // use taskStatus:start|name|message
 // use taskStatus:progress|name|message|percentage
@@ -31,6 +34,14 @@ const electronHandler = {
     },
     once(channel: Channels, func: (...args: unknown[]) => void) {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
+    },
+  },
+  store: {
+    get<T extends keyof storeType>(key: T): storeType[T] {
+      return ipcRenderer.sendSync('electron-store-get', key) as storeType[T];
+    },
+    set<T extends keyof storeType>(key: T, val: storeType[T]) {
+      ipcRenderer.send('electron-store-set', key, val);
     },
   },
 };

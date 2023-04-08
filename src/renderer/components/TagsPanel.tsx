@@ -6,8 +6,6 @@ import TagsPanelSelected from './TagsPanelSelected';
 import TagsPopup from './TagsPopup';
 
 function TagsPanel() {
-  console.log('render TagsPanel');
-
   return (
     <div id="tags-panel" tabIndex={0}>
       <Split

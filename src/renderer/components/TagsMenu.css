@@ -17,13 +17,8 @@
   align-items: center;
   height: max-content;
   width: 70px;
-  cursor: pointer;
   padding: 4px 2px;
-  border-radius: var(--radius-0);
-  transition: var(--bg-transition);
   background-color: inherit;
-  border: none;
-  color: inherit;
   gap: 3px;
 }
 

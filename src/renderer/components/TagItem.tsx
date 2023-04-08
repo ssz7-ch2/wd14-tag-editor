@@ -59,8 +59,6 @@ const TagItem = memo(function TagItem({
 
   const setSelectedTags = useSetAtom(selectedTagsAtom);
 
-  // console.log('render TagItem');
-
   useEffect(() => {
     if (focus && ref.current) {
       ref.current.querySelector('input')?.focus();
@@ -112,6 +110,7 @@ const TagItem = memo(function TagItem({
               }
               break;
             case 'ArrowLeft':
+              e.stopPropagation();
               if (!editing) {
                 e.preventDefault();
                 setEditing(true);
@@ -119,6 +118,7 @@ const TagItem = memo(function TagItem({
               }
               break;
             case 'ArrowRight':
+              e.stopPropagation();
               if (!editing) {
                 e.preventDefault();
                 setEditing(true);

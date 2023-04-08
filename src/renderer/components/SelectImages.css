@@ -20,12 +20,7 @@
 }
 
 #select-images > button {
-  border: none;
   background-color: hsl(var(--layer-2));
-  color: inherit;
   padding: 12px 20px;
   font-size: 16px;
-  border-radius: var(--radius-0);
-  cursor: pointer;
-  transition: var(--bg-transition);
 }

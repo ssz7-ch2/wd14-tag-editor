@@ -22,13 +22,13 @@ function Menu() {
   const saveTags = useSetAtom(saveTagsAtom);
   const openFolder = useSetAtom(openFolderAtom);
 
-  console.log('render Menu');
-
   const cancel = () => {
     window.electron.ipcRenderer.sendMessage('task:cancel');
   };
 
-  const openSettings = () => {};
+  const openSettings = () => {
+    window.electron.ipcRenderer.sendMessage('openSettings');
+  };
 
   return (
     <div id="menu">

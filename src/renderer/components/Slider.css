@@ -1,0 +1,34 @@
+.slider-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.slider {
+  width: 100%;
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.slider-track {
+  height: 10px;
+  border-radius: var(--radius-0);
+  background-color: hsl(var(--layer-1));
+}
+
+.slider-track-0 {
+  background-color: hsl(var(--layer-2));
+}
+
+.slider-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 9999px;
+  background-color: hsl(var(--layer-3));
+}
+
+.slider-value {
+  width: 50px;
+  text-align: center;
+}

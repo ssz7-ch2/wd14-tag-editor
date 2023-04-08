@@ -2,6 +2,9 @@ import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { Menu as ContextMenu, Item, useContextMenu } from 'react-contexify';
 import {
   imagesDataAtom,
+  removeAllImagesAtom,
+  removeImageAtom,
+  selectAllFilteredImagesAtom,
   tagSelectedImagesAtom,
 } from 'renderer/atoms/derivedWriteAtom';
 import { imagesAtom, selectedImagesAtom } from 'renderer/atoms/primitiveAtom';
@@ -15,14 +18,13 @@ import './ImagePanel.css';
 
 const menuId: ContextMenuIds = 'ImagePanel';
 
-// TODO: on left or right key press, change image
 export const displayedImageAtom = atom((get) => {
   const imageList: ImageFileInfo[] = [];
   const images = get(imagesAtom);
   const selectedImages = get(selectedImagesAtom);
-  Object.values(images).forEach((image) => {
-    if (selectedImages.includes(image.path)) {
-      imageList.push(image);
+  selectedImages.forEach((imagePath) => {
+    if (imagePath in images) {
+      imageList.push(images[imagePath]);
     }
   });
   if (imageList.length === 0) return null;
@@ -33,14 +35,26 @@ function ImagePanel() {
   const displayedImage = useAtomValue(displayedImageAtom);
   const setImagesData = useSetAtom(imagesDataAtom);
   const tagSelectedImages = useSetAtom(tagSelectedImagesAtom);
+  const removeImage = useSetAtom(removeImageAtom);
+  const removeAllImages = useSetAtom(removeAllImagesAtom);
+  const selectAllFilteredImages = useSetAtom(selectAllFilteredImagesAtom);
 
   const { show } = useContextMenu({
     id: menuId,
   });
 
-  console.log('render ImagePanel');
   return (
-    <div id="image-panel" className="panel" tabIndex={0}>
+    <div
+      id="image-panel"
+      className="panel"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.ctrlKey && e.key.toLocaleUpperCase() === 'A') {
+          e.preventDefault();
+          selectAllFilteredImages();
+        }
+      }}
+    >
       <h2 className="panel-header">Selected Image</h2>
       <div
         id="image-viewer"
@@ -83,8 +97,9 @@ function ImagePanel() {
       </div>
 
       <ContextMenu id={menuId}>
-        <Item onClick={() => tagSelectedImages(true)}>Tag Image</Item>
-        <Item onClick={() => tagSelectedImages(false)}>Tag Selected</Item>
+        <Item onClick={tagSelectedImages}>Tag Selected Images</Item>
+        <Item onClick={removeImage}>Remove Selected Images</Item>
+        <Item onClick={removeAllImages}>Remove All Images</Item>
       </ContextMenu>
     </div>
   );

@@ -6,7 +6,6 @@ import './SelectImages.css';
 function SelectImages() {
   const setImagesData = useSetAtom(imagesDataAtom);
 
-  console.log('render SelectImages');
   return (
     <div
       id="select-images"

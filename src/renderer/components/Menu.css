@@ -15,13 +15,8 @@
   align-items: center;
   height: max-content;
   width: 80px;
-  cursor: pointer;
   padding: 4px 0px;
-  border-radius: var(--radius-0);
-  transition: var(--bg-transition);
   background-color: inherit;
-  border: none;
-  color: inherit;
   gap: 3px;
 }
 

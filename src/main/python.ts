@@ -2,6 +2,7 @@ import axios from 'axios';
 import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import { settingsStore } from './store';
 import { Task } from './task';
 
 function spawnPython(venvDir: string) {
@@ -9,7 +10,15 @@ function spawnPython(venvDir: string) {
   try {
     const task = new Task();
     task.start('Starting python');
-    const python = spawn(pythonPath, ['./python/tagger.py']);
+    const args = ['./python/tagger.py'];
+
+    if (settingsStore.get('useTensorflow')) {
+      args.push('--use_tensorflow');
+      args.push('--model');
+      args.push(settingsStore.get('taggerModel'));
+    }
+
+    const python = spawn(pythonPath, args);
 
     python.on('spawn', () => task.end('Started python'));
 

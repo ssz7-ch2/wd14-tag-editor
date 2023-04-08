@@ -79,6 +79,14 @@ img {
   display: block;
 }
 
+button {
+  border: none;
+  color: inherit;
+  border-radius: var(--radius-0);
+  cursor: pointer;
+  transition: var(--bg-transition);
+}
+
 ::-webkit-scrollbar {
   width: 12px;
 }

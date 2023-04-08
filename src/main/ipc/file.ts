@@ -195,7 +195,7 @@ export async function saveTags(
   mainWindow: BrowserWindow | null,
   imagesTags: SaveTagsType
 ) {
-  if (mainWindow == null) return;
+  if (mainWindow == null || imagesTags.length === 0) return;
   const task = new Task();
   task.start(`Saving tags 0/${imagesTags.length}`);
   let count = 0;

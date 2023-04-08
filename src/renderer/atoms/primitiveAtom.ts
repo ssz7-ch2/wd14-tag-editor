@@ -32,3 +32,7 @@ export const popupAtom = atom<AddTagPopup>({
 });
 
 export const tagThresholdAtom = atom(0.2);
+
+tagThresholdAtom.onMount = (setAtom) => {
+  setAtom(window.electron.store.get('threshold'));
+};
