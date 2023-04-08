@@ -7,8 +7,8 @@ import { Task } from './task';
 
 function spawnPython(venvDir: string) {
   const pythonPath = path.join(venvDir, 'Scripts/python');
+  const task = new Task();
   try {
-    const task = new Task();
     task.start('Starting python');
     const args = ['./python/tagger.py'];
 
@@ -20,15 +20,21 @@ function spawnPython(venvDir: string) {
 
     const python = spawn(pythonPath, args);
 
+    python.on('error', () => {
+      task.end('Running without taggers');
+    });
+
     python.on('spawn', () => task.end('Started python'));
 
-    let taggerTask: Task;
+    const taggerTasks: { [key: string]: Task } = {};
 
     python.stdout.on('data', (data) => {
       const lines = String(data).split(/\r?\n/);
       lines.forEach((line) => {
-        if (line && line.startsWith('taskStatus:start')) {
-          taggerTask = new Task(async () => {
+        if (!line.startsWith('taskStatus')) return;
+        const taskId = line.split('|', 2)[1];
+        if (line.startsWith('taskStatus:start')) {
+          taggerTasks[taskId] = new Task(async () => {
             try {
               await axios.post('http://127.0.0.1:5000/cancel');
               return true;
@@ -37,17 +43,18 @@ function spawnPython(venvDir: string) {
               return false;
             }
           });
-          taggerTask.start(line.replace('taskStatus:start|', ''));
+          taggerTasks[taskId].start(line.replace(`taskStatus:start|${taskId}|`, ''));
         }
-        if (line && line.startsWith('taskStatus:update')) {
-          line = line.replace('taskStatus:update|', '');
+        if (line.startsWith('taskStatus:update')) {
+          line = line.replace(`taskStatus:update|${taskId}|`, '');
           const progress = parseFloat(line.split('|', 1)[0]);
           const startIndex = line.indexOf('|');
           const message = line.slice(startIndex + 1);
-          taggerTask.update(message, progress);
+          taggerTasks[taskId].update(message, progress);
         }
-        if (line && line.startsWith('taskStatus:end')) {
-          taggerTask.end(line.replace('taskStatus:end|', ''));
+        if (line.startsWith('taskStatus:end')) {
+          taggerTasks[taskId].end(line.replace(`taskStatus:end|${taskId}|`, ''));
+          delete taggerTasks[taskId];
         }
       });
     });

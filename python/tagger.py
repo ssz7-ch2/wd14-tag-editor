@@ -2,6 +2,7 @@ import argparse
 import csv
 import os
 import sys
+import uuid
 
 import cv2
 import numpy as np
@@ -24,7 +25,7 @@ TAGGER_DIR = os.path.join(file_dir, "taggers")
 
 ONNX_FILE = "model.onnx"
 CSV_FILE = "selected_tags.csv"
-FILES = ["model.onnx", "keras_metadata.pb", "saved_model.pb"]
+KERAS_FILES = ["keras_metadata.pb", "saved_model.pb"]
 SUB_DIR = "variables"
 SUB_DIR_FILES = ["variables.data-00000-of-00001", "variables.index"]
 
@@ -75,11 +76,37 @@ class Tagger:
     character_index = None
     character_threshold = 0.8
     providers = ['CUDAExecutionProvider', 'CPUExecutionProvider']
-    def __init__(self, model_dir, model_name):
+    def __init__(self, model_dir, model_name, repo):
         self.model_path = model_dir
         self.model_name = model_name
+        self.repo = repo
         self.loaded = False
+    def download(self):
+        taskId = uuid.uuid4()
+        stdout(f"{start_prefix}{taskId}|Downloading {self.model_name}-onnx tagger\n")
+        hf_hub_download(self.repo, ONNX_FILE, cache_dir=os.path.join(TAGGER_DIR, self.model_name), force_download=True, force_filename=ONNX_FILE)
+        stdout(f"{end_prefix}{taskId}|Downloaded {self.model_name}-onnx tagger\n")
+
+    def download_keras(self):
+        taskId = uuid.uuid4()
+        stdout(f"{start_prefix}{taskId}|Downloading {self.model_name}-keras tagger\n")
+        count = 0
+        total = len(KERAS_FILES) + len(SUB_DIR_FILES)
+        for file in KERAS_FILES:
+            count += 1
+            stdout(f"{update_prefix}{taskId}|{count / total}|Downloading {self.model_name}-keras tagger {count}/{total}\n")
+            hf_hub_download(self.repo, file, cache_dir=os.path.join(TAGGER_DIR, self.model_name), force_download=True, force_filename=file)
+        for file in SUB_DIR_FILES:
+            count += 1
+            stdout(f"{update_prefix}{taskId}|{count / total}|Downloading {self.model_name}-keras tagger {count}/{total}\n")
+            hf_hub_download(self.repo, file, subfolder=SUB_DIR, cache_dir=os.path.join(TAGGER_DIR, self.model_name, SUB_DIR), force_download=True, force_filename=file)
+        stdout(f"{end_prefix}{taskId}|Downloaded {self.model_name}-keras tagger\n")
     def load(self):
+        if not os.path.exists(os.path.join(self.model_path, ONNX_FILE)):
+            self.download()
+
+        taskId = uuid.uuid4()
+        stdout(f"{start_prefix}{taskId}|Loading {self.model_name} tagger\n")
         try:
             self.model = InferenceSession(os.path.join(self.model_path, ONNX_FILE), providers=Tagger.providers)
         except:
@@ -88,10 +115,18 @@ class Tagger:
         _, height, _, _ = self.model.get_inputs()[0].shape
         self.height = height
         self.loaded = True
+        stdout(f"{end_prefix}{taskId}|Loaded {self.model_name} tagger\n")
 
     def load_keras(self):
-        self.model = load_model(self.model_path)
+        taskId = uuid.uuid4()
+        stdout(f"{start_prefix}{taskId}|Loading {self.model_name} tagger\n")
+        try:
+            self.model = load_model(self.model_path)
+        except:
+            self.download_keras()
+            self.model = load_model(self.model_path)
         self.loaded = True
+        stdout(f"{end_prefix}{taskId}|Loaded {self.model_name} tagger\n")
 
     def tag_image(self, image_path, threshold_low):
         image = preprocess_image(image_path, self.height)
@@ -116,7 +151,8 @@ class Tagger:
         if self.loaded == False:
             self.load()
 
-        stdout(f"{start_prefix}Tagging images 0/{len(image_paths)}\n")
+        taskId = uuid.uuid4()
+        stdout(f"{start_prefix}{taskId}|Tagging images 0/{len(image_paths)}\n")
         image_map = {}
         count = 0
         for image_path in image_paths:
@@ -124,10 +160,10 @@ class Tagger:
                 stop_process = False
                 return
             count += 1
-            stdout(f"{update_prefix}{count / len(image_paths)}|Tagging images {count}/{len(image_paths)}\n")
+            stdout(f"{update_prefix}{taskId}|{count / len(image_paths)}|Tagging images {count}/{len(image_paths)}\n")
             image_map[image_path] = self.tag_image(image_path, threshold_low)
 
-        stdout(f"{end_prefix}Tagged {count} image{'' if count == 1 else 's'}\n")
+        stdout(f"{end_prefix}{taskId}|Tagged {count} image{'' if count == 1 else 's'}\n")
         return image_map
 
     def interrogate_keras(self, image_paths, threshold_low, batch_size = 8):
@@ -136,7 +172,8 @@ class Tagger:
         if self.loaded == False:
             self.load_keras()
 
-        stdout(f"{start_prefix}Tagging images 0/{len(image_paths)}\n")
+        taskId = uuid.uuid4()
+        stdout(f"{start_prefix}{taskId}|Tagging images 0/{len(image_paths)}\n")
 
         def run_batch(batch_images, image_map):
             imgs = np.array([im for _, im in batch_images])
@@ -166,29 +203,15 @@ class Tagger:
                 run_batch(batch_images, image_map)
                 count += len(batch_images)
                 batch_images.clear()
-                stdout(f"{update_prefix}{count / len(image_paths)}|Tagging images {count}/{len(image_paths)}\n")
+                stdout(f"{update_prefix}{taskId}|{count / len(image_paths)}|Tagging images {count}/{len(image_paths)}\n")
 
         if len(batch_images) > 0:
             run_batch(batch_images, image_map)
             count += len(batch_images)
-            stdout(f"{update_prefix}{count / len(image_paths)}|Tagging images {count}/{len(image_paths)}\n")
+            stdout(f"{update_prefix}{taskId}|{count / len(image_paths)}|Tagging images {count}/{len(image_paths)}\n")
 
-        stdout(f"{end_prefix}Tagged {count} image{'' if count == 1 else 's'}\n")
+        stdout(f"{end_prefix}{taskId}|Tagged {count} image{'' if count == 1 else 's'}\n")
         return image_map
-
-def load(*args):
-    stdout(f"{start_prefix}Loading tagger model 0/{len(args)}\n")
-    for i, tagger in enumerate(args):
-        stdout(f"{update_prefix}{(i + 1) / len(args)}|Loading tagger model {i + 1}/{len(args)}\n")
-        tagger.load()
-    stdout(f"{end_prefix}Loaded {len(args)} tagger models\n")
-
-def load_keras(*args):
-    stdout(f"{start_prefix}Loading tagger model 0/{len(args)}\n")
-    for i, tagger in enumerate(args):
-        stdout(f"{update_prefix}{(i + 1) / len(args)}|Loading tagger model {i + 1}/{len(args)}\n")
-        tagger.load_keras()
-    stdout(f"{end_prefix}Loaded {len(args)} tagger models\n")
 
 @app.post("/tag")
 def get_tags():
@@ -230,21 +253,12 @@ def cancel():
 
 if __name__ == "__main__":
     if not os.path.exists(TAGGER_DIR):
-        stdout(f"{start_prefix}Downloading tagger models\n")
         # download csv file separately since it's the same for all repos
         hf_hub_download(WD14_TAGGERS["swinv2"], CSV_FILE, cache_dir=TAGGER_DIR, force_download=True, force_filename=CSV_FILE)
-        
-        for i, (tagger, repo) in enumerate(WD14_TAGGERS.items()):
-            stdout(f"{update_prefix}{(i + 1) / len(WD14_TAGGERS)}|Downloading tagger models {i + 1}/{len(WD14_TAGGERS)}\n")
-            for file in FILES:
-                hf_hub_download(repo, file, cache_dir=os.path.join(TAGGER_DIR, tagger), force_download=True, force_filename=file)
-            for file in SUB_DIR_FILES:
-                hf_hub_download(repo, file, subfolder=SUB_DIR, cache_dir=os.path.join(TAGGER_DIR, tagger, SUB_DIR), force_download=True, force_filename=file)
-        stdout(f"{end_prefix}Downloaded tagger models\n")
 
-    taggers["swinv2"] = Tagger(os.path.join(TAGGER_DIR, "swinv2"), "swinv2")
-    taggers["convnextv2"] = Tagger(os.path.join(TAGGER_DIR, "convnextv2"), "convnextv2")
-    taggers["convnext"] = Tagger(os.path.join(TAGGER_DIR, "convnext"), "convnext")
+    taggers["swinv2"] = Tagger(os.path.join(TAGGER_DIR, "swinv2"), "swinv2", WD14_TAGGERS["swinv2"])
+    taggers["convnextv2"] = Tagger(os.path.join(TAGGER_DIR, "convnextv2"), "convnextv2", WD14_TAGGERS["convnextv2"])
+    taggers["convnext"] = Tagger(os.path.join(TAGGER_DIR, "convnext"), "convnext", WD14_TAGGERS["convnext"])
     # taggers["vit"] = Tagger(os.path.join(TAGGER_DIR, "vit"), "vit")
 
     parser = argparse.ArgumentParser()
@@ -269,9 +283,9 @@ if __name__ == "__main__":
         Tagger.character_index = next(i for i, row in enumerate(rows) if row[2] == '4')
 
         if use_tensorflow:
-            load_keras(taggers[args.model])
+            taggers[args.model].load_keras()
         else:
-            load(taggers["swinv2"], taggers["convnextv2"], taggers["convnext"])
+            taggers[args.model].load()
 
         app.run(host="127.0.0.1", port=5000)
     except Exception as e:

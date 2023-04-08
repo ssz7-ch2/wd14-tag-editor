@@ -167,7 +167,11 @@ if (!lock) {
       Task.sendLatest();
     });
 
-    python = await setUp();
+    try {
+      python = await setUp();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const openSettingsWindow = () => {
