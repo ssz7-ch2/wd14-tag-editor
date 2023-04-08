@@ -445,3 +445,9 @@ export const selectAllFilteredImagesAtom = atom(null, (get, set) => {
     imageList.map((image) => image.path)
   );
 });
+
+export const setFirstSelectedTag = atom(null, (get, set) => {
+  const tagsList = get(tagsListSelectedAtom);
+  if (tagsList.length === 0) return;
+  set(selectedTagsAtom, [tagsList[0]]);
+});

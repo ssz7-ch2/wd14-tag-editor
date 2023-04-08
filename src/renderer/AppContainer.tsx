@@ -4,6 +4,7 @@ import './AppContainer.css';
 import {
   changeSelectedImagesAtom,
   saveTagsAtom,
+  setFirstSelectedTag,
   tagAllImagesAtom,
   tagSelectedImagesAtom,
 } from './atoms/derivedWriteAtom';
@@ -21,6 +22,7 @@ function AppContainer() {
   const tagAllImages = useSetAtom(tagAllImagesAtom);
   const tagSelectedImages = useSetAtom(tagSelectedImagesAtom);
   const saveTags = useSetAtom(saveTagsAtom);
+  const setFirstSelected = useSetAtom(setFirstSelectedTag);
 
   return (
     <div
@@ -85,7 +87,6 @@ function AppContainer() {
             });
             break;
           case 'ARROWLEFT':
-          case 'ARROWUP':
             e.preventDefault();
             if (e.shiftKey || e.ctrlKey) {
               changeSelectedImages(-1, true);
@@ -94,13 +95,17 @@ function AppContainer() {
             }
             break;
           case 'ARROWRIGHT':
-          case 'ARROWDOWN':
             e.preventDefault();
             if (e.shiftKey || e.ctrlKey) {
               changeSelectedImages(1, true);
             } else {
               changeSelectedImages(1);
             }
+            break;
+          case 'ARROWUP':
+          case 'ARROWDOWN':
+            e.preventDefault();
+            setFirstSelected();
             break;
           default:
             break;

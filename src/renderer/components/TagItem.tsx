@@ -69,7 +69,8 @@ const TagItem = memo(function TagItem({
   }, [focus, ref.current, selected, tag]);
 
   const handleOnClick = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
-    if (e.detail === 1 && focus && !editing) {
+    e.preventDefault();
+    if (e.detail === 1 && selected && !editing) {
       setSelectedTags([]);
     } else {
       onClickHandler(e);
@@ -95,6 +96,10 @@ const TagItem = memo(function TagItem({
         onDoubleClick={() => setEditing(true)}
         onContextMenu={handleOnClick}
         onClick={handleOnClick}
+        onFocus={() => {
+          setSelectedTags([tag]);
+        }}
+        onMouseDown={(e) => e.preventDefault()}
         onBlur={() => {
           setEditing(false);
           if (tagName !== tag.name) {
@@ -111,24 +116,6 @@ const TagItem = memo(function TagItem({
               } else {
                 setEditing(true);
                 ref.current?.querySelector('input')?.select();
-              }
-              break;
-            case 'ArrowLeft':
-              e.stopPropagation();
-              if (!editing) {
-                e.preventDefault();
-                setEditing(true);
-                ref.current?.querySelector('input')?.setSelectionRange(0, 0);
-              }
-              break;
-            case 'ArrowRight':
-              e.stopPropagation();
-              if (!editing) {
-                e.preventDefault();
-                setEditing(true);
-                ref.current
-                  ?.querySelector('input')
-                  ?.setSelectionRange(tagName.length, tagName.length);
               }
               break;
             default:

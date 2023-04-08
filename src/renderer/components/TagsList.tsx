@@ -83,7 +83,12 @@ function TagsList({ tags, setImagesTags, panel }: TagsListProps) {
   const deleteTags = useSetAtom(deleteTagsAtom);
 
   return (
-    <div className="tags-list" onClick={() => setSelectedTagsPanel(panel)}>
+    <div
+      className="tags-list"
+      onClick={() => setSelectedTagsPanel(panel)}
+      onMouseDown={(e) => e.preventDefault()}
+      onFocus={() => setSelectedTagsPanel(panel)}
+    >
       {tags.map((tag, i) => (
         <TagItem
           key={tag.name}
@@ -170,12 +175,16 @@ function TagsList({ tags, setImagesTags, panel }: TagsListProps) {
               case 'ArrowDown':
                 e.preventDefault();
                 e.stopPropagation();
-                setSelectedTags([tags[Math.min(tags.length - 1, i + 1)]]);
+                if (i < tags.length - 1) {
+                  setSelectedTags([tags[i + 1]]);
+                }
                 break;
               case 'ArrowUp':
                 e.preventDefault();
                 e.stopPropagation();
-                setSelectedTags([tags[Math.max(0, i - 1)]]);
+                if (i > 0) {
+                  setSelectedTags([tags[i - 1]]);
+                }
                 break;
               case 'Delete':
                 e.preventDefault();

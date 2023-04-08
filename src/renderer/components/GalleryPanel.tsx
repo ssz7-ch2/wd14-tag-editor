@@ -40,6 +40,7 @@ function GalleryPanel() {
     i: number,
     path: string
   ) => {
+    // TODO: move to derivedWriteAtom.ts, combine with changeSelectedImagesAtom
     if (!e.shiftKey) {
       setPrevIndex(i);
     }

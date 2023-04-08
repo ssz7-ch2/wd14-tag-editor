@@ -9,3 +9,9 @@ root.render(<App />);
 document.addEventListener('contextmenu', (e) => {
   e.preventDefault();
 });
+
+document.addEventListener('keydown', () => {
+  if (document.activeElement === document.body) {
+    document.getElementById('app-container')?.focus();
+  }
+});
