@@ -34,36 +34,41 @@ const TagItem = memo(function TagItem({
   const [editing, setEditing] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const selectedFocusAtom = useMemo(
+  const selectedAtom = useMemo(
+    () => atom((get) => get(selectedTagsAtom).some((t) => t.name === tag.name)),
+    [tag]
+  );
+
+  const focusAtom = useMemo(
     () =>
       atom((get) => {
         const selectedTags = get(selectedTagsAtom);
-        const selected = selectedTags.some((t) => t.name === tag.name);
-        let focus = false;
-        if (selected) {
-          const selectedPanel = get(selectedTagsPanelAtom);
-          focus =
-            selectedTags.length > 0 &&
-            selectedTags[selectedTags.length - 1].name === tag.name &&
-            panel === selectedPanel;
-        }
-        return {
-          selected,
-          focus,
-        };
+        const selectedPanel = get(selectedTagsPanelAtom);
+        return (
+          selectedTags.length > 0 &&
+          selectedTags[selectedTags.length - 1].name === tag.name &&
+          panel === selectedPanel
+        );
       }),
     [tag]
   );
-  const { selected, focus } = useAtomValue(selectedFocusAtom);
+  const selected = useAtomValue(selectedAtom);
+  const focus = useAtomValue(focusAtom);
 
   const setSelectedTags = useSetAtom(selectedTagsAtom);
+
+  console.log('render tagitem');
 
   useEffect(() => {
     if (focus && ref.current) {
       ref.current.querySelector('input')?.focus();
       ref.current.querySelector('input')?.setSelectionRange(null, null);
+    } else if (selected && ref.current) {
+      ref.current.querySelector('input')?.scrollIntoView({
+        block: 'center',
+      });
     }
-  }, [focus, ref.current]);
+  }, [focus, ref.current, selected, tag]);
 
   const handleOnClick = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     if (e.detail === 1 && focus && !editing) {
