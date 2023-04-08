@@ -177,6 +177,11 @@ if (!lock) {
   };
 
   const openSettingsWindow = () => {
+    if (settingsWindow) {
+      settingsWindow.close();
+      settingsWindow = null;
+      return;
+    }
     settingsWindow = new BrowserWindow({
       width: 420,
       height: 490,
