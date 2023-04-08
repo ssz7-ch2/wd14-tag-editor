@@ -4,4 +4,5 @@
   align-items: center;
   min-height: 0;
   overflow-y: auto;
+  overflow-anchor: none;
 }

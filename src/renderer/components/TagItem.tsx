@@ -34,28 +34,27 @@ const TagItem = memo(function TagItem({
   const [editing, setEditing] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const selectedAtom = useMemo(
-    () =>
-      atom(
-        (get) =>
-          get(selectedTagsPanelAtom) === panel &&
-          get(selectedTagsAtom).some((t) => t.name === tag.name)
-      ),
-    [tag]
-  );
-  const focusAtom = useMemo(
+  const selectedFocusAtom = useMemo(
     () =>
       atom((get) => {
         const selectedTags = get(selectedTagsAtom);
-        return (
-          selectedTags.length > 0 &&
-          selectedTags[selectedTags.length - 1] === tag
-        );
+        const selected = selectedTags.some((t) => t.name === tag.name);
+        let focus = false;
+        if (selected) {
+          const selectedPanel = get(selectedTagsPanelAtom);
+          focus =
+            selectedTags.length > 0 &&
+            selectedTags[selectedTags.length - 1].name === tag.name &&
+            panel === selectedPanel;
+        }
+        return {
+          selected,
+          focus,
+        };
       }),
     [tag]
   );
-  const selected = useAtomValue(selectedAtom);
-  const focus = useAtomValue(focusAtom);
+  const { selected, focus } = useAtomValue(selectedFocusAtom);
 
   const setSelectedTags = useSetAtom(selectedTagsAtom);
 
@@ -64,10 +63,10 @@ const TagItem = memo(function TagItem({
       ref.current.querySelector('input')?.focus();
       ref.current.querySelector('input')?.setSelectionRange(null, null);
     }
-  }, [focus, ref.current, selected]);
+  }, [focus, ref.current]);
 
   const handleOnClick = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
-    if (e.detail === 1 && selected && !editing) {
+    if (e.detail === 1 && focus && !editing) {
       setSelectedTags([]);
     } else {
       onClickHandler(e);
@@ -76,7 +75,9 @@ const TagItem = memo(function TagItem({
 
   return (
     <div
-      className={`tag${selected ? ' selected' : ''}${editing ? ' edit' : ''}`}
+      className={`tag${selected ? ' selected' : ''}${focus ? ' focus' : ''}${
+        editing ? ' edit' : ''
+      }`}
       ref={ref}
       {...props}
     >

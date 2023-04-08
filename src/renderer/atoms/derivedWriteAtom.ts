@@ -130,7 +130,6 @@ export const removeTagsAllAtom = atom(null, (get, set) => {
 
 export const filterAtom = atom(null, (get, set) => {
   const selectedTags = get(selectedTagsAtom);
-  console.log(selectedTags);
   const updatedFilter = new Set(selectedTags.map((tag) => tag.name));
   let update = true;
   set(filterTagsAtom, (prev) => {

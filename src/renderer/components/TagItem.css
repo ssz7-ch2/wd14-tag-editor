@@ -23,6 +23,10 @@
   background-color: hsla(var(--layer-4), 0.35);
 }
 
+.tag.focus {
+  background-color: hsla(var(--layer-highlight), 0.5);
+}
+
 .tag.edit input {
   cursor: text;
 }
