@@ -146,12 +146,11 @@ class Tagger:
 
             for (image_path, _), prob in zip(batch_images, probs):
                 image_tags = []
-                for i, p in enumerate(prob):
-                    if p >= threshold_low and i >= 4:
-                        tag = Tagger.tags[i]
+                for i, (tag, p) in enumerate(zip(Tagger.tags[4:], prob[4:])):
+                    if p > Tagger.character_threshold or (i < Tagger.character_index - 4 and p > threshold_low):
                         if tag not in UNDERSCORE_TAGS:
                             tag = tag.replace("_", " ")
-                        image_tags.append({"name": tag, "score": p.item()})
+                        image_tags.append({"name": tag, "score": p.item()}) # convert numpy float32 to native Python type
                 image_map[image_path] = sorted(image_tags, key=lambda x: x["score"], reverse=True)
 
         image_map = {}
