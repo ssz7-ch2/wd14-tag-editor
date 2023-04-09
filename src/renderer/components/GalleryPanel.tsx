@@ -26,7 +26,7 @@ function GalleryPanel() {
     const timeoutId = setTimeout(() => {
       firstSelected.current?.scrollIntoView({
         behavior: 'smooth',
-        block: 'center',
+        block: 'nearest',
         inline: 'nearest',
       });
     }, 50);
