@@ -1,8 +1,9 @@
 import { useAtom, useAtomValue } from 'jotai';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useContextMenu } from 'react-contexify';
 import { filteredImagesAtom } from 'renderer/atoms/derivedReadAtom';
 import { selectedImagesAtom } from 'renderer/atoms/primitiveAtom';
+import { handleSelect } from 'renderer/utils';
 import { ContextMenuIds } from '../../../types/types';
 import './GalleryPanel.css';
 import { displayedImageAtom } from './ImagePanel';
@@ -11,7 +12,6 @@ const menuId: ContextMenuIds = 'ImagePanel';
 
 function GalleryPanel() {
   const [selectedImages, setSelectedImages] = useAtom(selectedImagesAtom);
-  const [prevIndex, setPrevIndex] = useState(0);
 
   const imageList = useAtomValue(filteredImagesAtom);
   const displayedImage = useAtomValue(displayedImageAtom);
@@ -26,7 +26,7 @@ function GalleryPanel() {
     const timeoutId = setTimeout(() => {
       firstSelected.current?.scrollIntoView({
         behavior: 'smooth',
-        block: 'center',
+        block: 'nearest',
         inline: 'nearest',
       });
     }, 50);
@@ -34,44 +34,6 @@ function GalleryPanel() {
       clearTimeout(timeoutId);
     };
   }, [displayedImage, imageList]);
-
-  const handleOnClick = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    i: number,
-    path: string
-  ) => {
-    // TODO: move to derivedWriteAtom.ts, combine with changeSelectedImagesAtom
-    if (!e.shiftKey) {
-      setPrevIndex(i);
-    }
-    setSelectedImages((prev) => {
-      if (prev.length === 1 && prev.includes(imageList[i].path)) {
-        return prev;
-      }
-
-      if (e.ctrlKey) {
-        if (prev.includes(path)) {
-          return prev.filter((imagePath) => imagePath !== path);
-        }
-
-        return [...prev, path];
-      }
-      if (e.shiftKey) {
-        const updated: string[] = [];
-
-        imageList
-          .slice(prevIndex > i ? i : prevIndex, prevIndex > i ? prevIndex + 1 : i + 1)
-          .forEach((image) => updated.push(image.path));
-
-        if (prevIndex > i) {
-          updated.reverse();
-        }
-        return [...prev, ...updated];
-      }
-
-      return [path];
-    });
-  };
 
   return (
     <div
@@ -97,7 +59,16 @@ function GalleryPanel() {
                 : undefined
             }
             onClick={(e) => {
-              handleOnClick(e, i, image.path);
+              setSelectedImages((prev) => {
+                return handleSelect(
+                  imageList.map((image) => image.path),
+                  prev,
+                  image.path,
+                  e.ctrlKey,
+                  e.shiftKey,
+                  false
+                );
+              });
             }}
           >
             <img src={image.thumbnail} alt="" onDragStart={(e) => e.preventDefault()} />

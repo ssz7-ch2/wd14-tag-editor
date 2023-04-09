@@ -88,19 +88,11 @@ function AppContainer() {
             break;
           case 'ARROWLEFT':
             e.preventDefault();
-            if (e.shiftKey || e.ctrlKey) {
-              changeSelectedImages(-1, true);
-            } else {
-              changeSelectedImages(-1);
-            }
+            changeSelectedImages(-1, e.ctrlKey, e.shiftKey);
             break;
           case 'ARROWRIGHT':
             e.preventDefault();
-            if (e.shiftKey || e.ctrlKey) {
-              changeSelectedImages(1, true);
-            } else {
-              changeSelectedImages(1);
-            }
+            changeSelectedImages(1, e.ctrlKey, e.shiftKey);
             break;
           case 'ARROWUP':
           case 'ARROWDOWN':
