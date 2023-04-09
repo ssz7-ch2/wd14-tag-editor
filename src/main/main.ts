@@ -68,7 +68,7 @@ if (!lock) {
     openSettingsWindow();
   });
 
-  ipcMain.on('setTagThreshold', async (event, arg) => {
+  ipcMain.on('setTagThreshold', async (_, arg) => {
     mainWindow?.webContents.send('setTagThreshold', arg[0]);
   });
 
@@ -182,9 +182,9 @@ if (!lock) {
     }
     settingsWindow = new BrowserWindow({
       width: 420,
-      height: 490,
+      height: 530,
       minWidth: 420,
-      minHeight: 510,
+      minHeight: 550,
       title: 'Settings',
       backgroundColor: 'black',
       webPreferences: {

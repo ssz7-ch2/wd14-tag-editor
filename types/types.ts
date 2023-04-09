@@ -16,7 +16,7 @@ export type TagData = {
 
 export type TagType = { name: string; score: number };
 
-export type SaveTagsType = { path: string; tags: string[] }[];
+export type SaveTagsType = { path: string; tags: TagType[] }[];
 
 export type Images = { [key: string]: ImageFileInfo };
 export type SetImages = (arg: (prev: Images) => Images) => void;

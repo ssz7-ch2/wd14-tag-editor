@@ -325,10 +325,7 @@ export const saveTagsAtom = atom(null, (get) => {
       .map(([imagePath, tags]) => {
         return {
           path: imagePath,
-          tags: tags
-            .filter((tag) => tag.score > tagThreshold)
-            .sort(sortTagScore)
-            .map((tag) => tag.name),
+          tags: tags.filter((tag) => tag.score > tagThreshold).sort(sortTagScore),
         };
       }) as SaveTagsType
   );
@@ -345,10 +342,7 @@ export const saveTagsSelectedAtom = atom(null, (get) => {
       .map((imagePath) => {
         return {
           path: imagePath,
-          tags: imagesTags[imagePath]
-            .filter((tag) => tag.score > tagThreshold)
-            .sort(sortTagScore)
-            .map((tag) => tag.name),
+          tags: imagesTags[imagePath].filter((tag) => tag.score > tagThreshold).sort(sortTagScore),
         };
       }) as SaveTagsType
   );

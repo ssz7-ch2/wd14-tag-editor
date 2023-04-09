@@ -3,8 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 import { ImageFileInfo, Images, SaveTagsType, TagData, TagType } from '../../../types/types';
+import { settingsStore } from '../store';
 import { Task } from '../task';
-import { isValidImage } from '../util';
+import { isValidImage, parseTagString, tagToString } from '../util';
 
 const getFileInfo = async (filePath: string): Promise<[ImageFileInfo, TagType[]]> => {
   const stats = await fs.promises.stat(filePath);
@@ -13,9 +14,7 @@ const getFileInfo = async (filePath: string): Promise<[ImageFileInfo, TagType[]]
   let tags: TagType[] = [];
   try {
     const content = await fs.promises.readFile(tagsFilePath, 'utf-8');
-    tags = content.split(',').map((tag) => {
-      return { name: tag.trim(), score: 1 };
-    });
+    tags = content.split(',').map(parseTagString);
   } catch (error) {
     /* tags don't exist */
   }
@@ -166,6 +165,7 @@ export async function saveTags(mainWindow: BrowserWindow | null, imagesTags: Sav
   const task = new Task();
   task.start(`Saving tags 0/${imagesTags.length}`);
   let count = 0;
+  const saveScores = settingsStore.get('saveScores');
   const res = imagesTags.map(async (image) => {
     const tagsFilePath = path.join(
       path.dirname(image.path),
@@ -175,13 +175,22 @@ export async function saveTags(mainWindow: BrowserWindow | null, imagesTags: Sav
       const existingTagsFile = await fs.promises.readFile(tagsFilePath, 'utf-8');
       const existingTags = existingTagsFile
         .split(',')
-        .map((tag) => tag.trim())
-        .filter((tag) => !image.tags.includes(tag));
+        .map(parseTagString)
+        .filter((tag) => !image.tags.some((t) => t.name === tag.name));
       image.tags = image.tags.concat(existingTags);
     } catch (error) {
       /* tags don't exist */
     }
-    await fs.promises.writeFile(tagsFilePath, image.tags.join(', '), 'utf-8');
+    if (saveScores) {
+      await fs.promises.writeFile(tagsFilePath, image.tags.map(tagToString).join(', '), 'utf-8');
+    } else {
+      await fs.promises.writeFile(
+        tagsFilePath,
+        image.tags.map((tag) => tag.name).join(', '),
+        'utf-8'
+      );
+    }
+
     count += 1;
     task.update(`Saving Tags ${count}/${imagesTags.length}`, count / imagesTags.length);
   });

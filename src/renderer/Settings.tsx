@@ -13,12 +13,14 @@ function Settings() {
     'threshold',
     'thresholdLow',
     'useTensorflow',
+    'saveScores',
   ];
   const taggerModel = window.electron.store.get('taggerModel');
   const batchSize = window.electron.store.get('batchSize');
   const threshold = window.electron.store.get('threshold');
   const thresholdLow = window.electron.store.get('thresholdLow');
   const useTensorFlow = window.electron.store.get('useTensorflow');
+  const saveScores = window.electron.store.get('saveScores');
 
   return (
     <form
@@ -45,6 +47,8 @@ function Settings() {
             case 'useTensorflow':
               window.electron.store.set(name, element.checked);
               break;
+            case 'saveScores':
+              window.electron.store.set(name, element.checked);
             default:
               break;
           }
@@ -80,7 +84,10 @@ function Settings() {
           name="thresholdLow"
         />
       </div>
-
+      <div className="option-h">
+        <p>Save Tag Scores</p>
+        <Checkbox name="saveScores" initial={saveScores} />
+      </div>
       <br />
       <button type="submit">Save</button>
     </form>

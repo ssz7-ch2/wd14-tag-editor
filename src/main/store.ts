@@ -6,6 +6,7 @@ export type storeType = {
   taggerModel: 'swinv2' | 'convnextv2' | 'convnext' | 'combined';
   threshold: number;
   thresholdLow: number;
+  saveScores: boolean;
 };
 
 const storeSchema: Schema<storeType> = {
@@ -35,6 +36,10 @@ const storeSchema: Schema<storeType> = {
     default: 0.05,
     maximum: 1,
     minimum: 0.01,
+  },
+  saveScores: {
+    type: 'boolean',
+    default: false,
   },
 };
 
