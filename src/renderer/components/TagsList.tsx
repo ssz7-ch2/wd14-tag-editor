@@ -1,6 +1,10 @@
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { useMemo } from 'react';
-import { clearSelectedTagsAtom, includeTagsAtom } from 'renderer/atoms/derivedWriteAtom';
+import {
+  changeSelectedTagsAtom,
+  clearSelectedTagsAtom,
+  includeTagsAtom,
+} from 'renderer/atoms/derivedWriteAtom';
 import {
   selectedTagsAtom,
   selectedTagsPanelAtom,
@@ -23,6 +27,7 @@ function TagsList({ tags, setImagesTags, panel }: TagsListProps) {
   const setSelectedTagsPanel = useSetAtom(selectedTagsPanelAtom);
   const clearSelectedTags = useSetAtom(clearSelectedTagsAtom);
   const includeTags = useSetAtom(includeTagsAtom);
+  const changeSelectedTags = useSetAtom(changeSelectedTagsAtom);
 
   const tagThreshold = useAtomValue(tagThresholdAtom);
 
@@ -161,17 +166,22 @@ function TagsList({ tags, setImagesTags, panel }: TagsListProps) {
                 includeTags();
                 break;
               case 'ArrowDown':
+              case 'Tab':
                 e.preventDefault();
                 e.stopPropagation();
-                if (i < tags.length - 1) {
-                  setSelectedTags([tags[i + 1]]);
+                if (e.shiftKey || e.ctrlKey) {
+                  changeSelectedTags(tags, i, 1, true);
+                } else {
+                  changeSelectedTags(tags, i, 1);
                 }
                 break;
               case 'ArrowUp':
                 e.preventDefault();
                 e.stopPropagation();
-                if (i > 0) {
-                  setSelectedTags([tags[i - 1]]);
+                if (e.shiftKey || e.ctrlKey) {
+                  changeSelectedTags(tags, i, -1, true);
+                } else {
+                  changeSelectedTags(tags, i, -1);
                 }
                 break;
               case 'Delete':

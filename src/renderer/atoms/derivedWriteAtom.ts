@@ -1,7 +1,7 @@
 import { atom } from 'jotai';
 import { displayedImageAtom } from 'renderer/components/ImagePanel';
 import { sortTagScore } from 'renderer/utils';
-import { Images, SaveTagsType, TagData, TagsPanelType } from '../../../types/types';
+import { Images, SaveTagsType, TagData, TagType, TagsPanelType } from '../../../types/types';
 import { filteredImagesAtom, tagsListAllAtom, tagsListSelectedAtom } from './derivedReadAtom';
 import {
   filterTagsAtom,
@@ -175,7 +175,7 @@ export const includeTagsAtom = atom(null, (get, set) => {
 
   if (selectedTags.length === 0 || selectedImages.length === 0) return;
 
-  let tagsList =
+  const tagsList =
     selectedTagsPanel === 'selected' ? get(tagsListSelectedAtom) : get(tagsListAllAtom);
 
   set(imagesTagsAtom, (prev) => {
@@ -399,6 +399,27 @@ export const changeSelectedImagesAtom = atom(null, (get, set, value: number, shi
     set(selectedImagesAtom, [newImagePath]);
   }
 });
+
+export const changeSelectedTagsAtom = atom(
+  null,
+  (get, set, tags: TagType[], index: number, value: number, shift = false) => {
+    const selectedTags = get(selectedTagsAtom);
+    const newIndex = Math.max(Math.min(index + value, tags.length - 1), 0);
+    const newTag = tags[newIndex];
+    if (shift) {
+      if (newIndex === index) return;
+      console.log(newIndex, index, selectedTags.includes(newTag));
+      if (selectedTags.includes(newTag)) {
+        set(selectedTagsAtom, (prev) => prev.filter((tag) => tag !== tags[index]));
+      } else {
+        set(selectedTagsAtom, (prev) => [...prev, newTag]);
+      }
+    } else {
+      if (newIndex === index && selectedTags.length === 1) return;
+      set(selectedTagsAtom, [newTag]);
+    }
+  }
+);
 
 export const selectAllFilteredImagesAtom = atom(null, (get, set) => {
   const imageList = get(filteredImagesAtom);
