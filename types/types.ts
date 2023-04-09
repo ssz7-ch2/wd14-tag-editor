@@ -20,7 +20,6 @@ export type SaveTagsType = { path: string; tags: string[] }[];
 
 export type Images = { [key: string]: ImageFileInfo };
 export type SetImages = (arg: (prev: Images) => Images) => void;
-export type SetImagesTags = (arg: SetStateAction<TagData>) => void;
 export type SetFilterTags = (arg: SetStateAction<Set<string>>) => void;
 
 export type TaskStatusType = {

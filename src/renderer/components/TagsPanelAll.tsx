@@ -1,15 +1,14 @@
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { tagsListAllAtom } from 'renderer/atoms/derivedReadAtom';
-import { imagesTagsAtom } from 'renderer/atoms/primitiveAtom';
 import TagsList from './TagsList';
 
 function TagsPanelAll() {
   const tagsList = useAtomValue(tagsListAllAtom);
-  const setImagesTags = useSetAtom(imagesTagsAtom);
+  console.log('render allpanel');
   return (
     <div className="panel">
       <h2 className="panel-header">All Image Tags</h2>
-      <TagsList tags={tagsList} setImagesTags={setImagesTags} panel="all" />
+      <TagsList tags={tagsList} panel="all" />
     </div>
   );
 }
