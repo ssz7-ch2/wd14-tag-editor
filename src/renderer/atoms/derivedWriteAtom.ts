@@ -462,7 +462,9 @@ export const changeSelectedTagsAtom = atom(
     ctrlKey: boolean = false,
     shiftKey: boolean = false
   ) => {
-    set(selectedTagsAtom, (prev) => handleKeySelect(tags, prev, delta, ctrlKey, shiftKey, false));
+    set(selectedTagsAtom, (prev) =>
+      handleKeySelect(tags, prev, delta, ctrlKey, shiftKey, false, (a, b) => a.name === b.name)
+    );
   }
 );
 
@@ -480,34 +482,46 @@ export const setFirstSelectedTag = atom(null, (get, set) => {
   set(selectedTagsAtom, [tagsList[0]]);
 });
 
-export const editTagsAtom = atom(null, (get, set, tagName: string, value: string) => {
-  const selectedTagsPanel = get(selectedTagsPanelAtom);
-  let tags: TagType[];
-  if (selectedTagsPanel === 'selected') {
-    tags = get(tagsListSelectedAtom);
-  } else {
-    tags = get(tagsListAllAtom);
-  }
-
-  set(imagesTagsAtom, (prev) => {
-    const updated = { ...prev };
-    let imagePaths = Object.keys(prev);
+export const editTagsAtom = atom(
+  null,
+  (get, set, prevName: string, tagName: string, score: number) => {
+    const selectedTagsPanel = get(selectedTagsPanelAtom);
+    let tags: TagType[];
     if (selectedTagsPanel === 'selected') {
-      imagePaths = get(selectedImagesAtom);
+      tags = get(tagsListSelectedAtom);
+    } else {
+      tags = get(tagsListAllAtom);
     }
-    imagePaths.forEach((imagePath) => {
-      const target = prev[imagePath].find((tag) => tag.name === tagName);
-      console.log(target);
-      if (target) {
-        updated[imagePath] = tags.filter((tag) => tag.name !== value);
 
-        const index = updated[imagePath].findIndex((tag) => tag.name === target.name);
-        updated[imagePath].splice(index, 1, { ...target, name: value });
+    let updatedTag: TagType;
+    set(imagesTagsAtom, (prev) => {
+      const updated = { ...prev };
+      let imagePaths = Object.keys(prev);
+      if (selectedTagsPanel === 'selected') {
+        imagePaths = get(selectedImagesAtom);
       }
+      imagePaths.forEach((imagePath) => {
+        const target = prev[imagePath].find((tag) => tag.name === prevName);
+        if (target) {
+          let index = updated[imagePath].findIndex((tag) => tag.name === target.name);
+          console.log(index, prevName, tagName);
+          updated[imagePath] = [...updated[imagePath]];
+          if (prevName !== tagName) {
+            console.log('edited name');
+            updated[imagePath] = updated[imagePath].filter((tag) => tag.name !== tagName);
+            index = updated[imagePath].findIndex((tag) => tag.name === target.name);
+          }
+          console.log(tagName);
+          updatedTag = { name: tagName, score: score };
+          updated[imagePath].splice(index, 1, updatedTag);
+          console.log(updated[imagePath]);
+        }
+      });
+      // set(selectedTagsAtom, [updatedTag]);
+      return updated;
     });
-    return updated;
-  });
-});
+  }
+);
 
 export const changePanelAtom = atom(
   null,

@@ -4,7 +4,6 @@ import {
   changeSelectedTagsAtom,
   clearSelectedTagsAtom,
   deleteTagsAtom,
-  includeTagsAtom,
 } from 'renderer/atoms/derivedWriteAtom';
 import {
   selectedTagsAtom,
@@ -27,7 +26,6 @@ function TagsList({ tags, panel }: TagsListProps) {
   const setSelectedTags = useSetAtom(selectedTagsAtom);
   const setSelectedTagsPanel = useSetAtom(selectedTagsPanelAtom);
   const clearSelectedTags = useSetAtom(clearSelectedTagsAtom);
-  const includeTags = useSetAtom(includeTagsAtom);
   const changeSelectedTags = useSetAtom(changeSelectedTagsAtom);
   const changePanel = useSetAtom(changePanelAtom);
 
@@ -64,11 +62,6 @@ function TagsList({ tags, panel }: TagsListProps) {
                   e.stopPropagation();
                   clearSelectedTags();
                 }
-                break;
-              case 'i':
-                e.preventDefault();
-                e.stopPropagation();
-                includeTags();
                 break;
               case 'ArrowDown':
                 e.preventDefault();

@@ -1,6 +1,6 @@
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react';
-import { editTagsAtom } from 'renderer/atoms/derivedWriteAtom';
+import { editTagsAtom, includeTagsAtom } from 'renderer/atoms/derivedWriteAtom';
 import { selectedTagsAtom, selectedTagsPanelAtom } from 'renderer/atoms/primitiveAtom';
 import { TagType, TagsPanelType } from '../../../types/types';
 import './TagItem.css';
@@ -18,6 +18,7 @@ function TagItem({ tag, moveToNext, panel, onClickHandler, ...props }: TagItemPr
   const ref = useRef<HTMLDivElement>(null);
 
   const editTags = useSetAtom(editTagsAtom);
+  const includeTags = useSetAtom(includeTagsAtom);
 
   const selectedAtom = useMemo(
     () => atom((get) => get(selectedTagsAtom).some((t) => t.name === tag.name)),
@@ -69,9 +70,11 @@ function TagItem({ tag, moveToNext, panel, onClickHandler, ...props }: TagItemPr
   }, [focus, ref.current, isLastSelected, tag, tag.name]);
 
   const handleOnClick = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+    e.stopPropagation();
     if (e.detail === 1 && focus && !editing) {
+      console.log('remove');
       setSelectedTags([]);
-    } else if (!editing) {
+    } else if ((e.detail === 2 && !selected) || (e.detail === 1 && !editing)) {
       onClickHandler(e);
     }
   };
@@ -86,7 +89,7 @@ function TagItem({ tag, moveToNext, panel, onClickHandler, ...props }: TagItemPr
       ref={ref}
       {...props}
     >
-      <div className="score" style={{ width: `${tag.score * 100}%` }} />
+      <div className="score" style={{ width: `${Math.min(Math.max(tag.score, 0), 1) * 100}%` }} />
       <input
         type="text"
         name={tag.score.toString()}
@@ -100,8 +103,15 @@ function TagItem({ tag, moveToNext, panel, onClickHandler, ...props }: TagItemPr
         onBlur={() => {
           setEditing(false);
           if (tagName !== tag.name) {
-            console.log(tagName, tag.name);
-            editTags(tag.name, tagName);
+            const split = tagName.split(':');
+            const score = split[split.length - 1];
+            if (!isNaN(Number(score)) && score.length > 0) {
+              console.log(tagName.replace(`:${score}`, ''));
+              editTags(tag.name, tagName.replace(`:${score}`, ''), Number(score));
+              setTagName(tagName.replace(`:${score}`, ''));
+            } else {
+              editTags(tag.name, tagName, tag.score);
+            }
           }
         }}
         onKeyDown={(e) => {
@@ -116,12 +126,23 @@ function TagItem({ tag, moveToNext, panel, onClickHandler, ...props }: TagItemPr
                 ref.current?.querySelector('input')?.select();
               }
               break;
+            case 'Escape':
+              if (editing) {
+                setEditing(false);
+                setTagName(tag.name);
+              }
+              break;
             case 'ArrowRight':
             case 'ArrowLeft':
               if (editing) {
                 e.stopPropagation();
               }
               break;
+            case 'i':
+              if (!editing) {
+                e.preventDefault();
+                includeTags();
+              }
             default:
               break;
           }

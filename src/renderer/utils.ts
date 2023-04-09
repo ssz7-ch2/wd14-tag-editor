@@ -24,13 +24,17 @@ export function handleKeySelect<T>(
   delta: number,
   ctrlKey: boolean,
   shiftKey: boolean,
-  removable = false
+  removable = false,
+  compare?: (a: T, b: T) => boolean
 ): T[] {
   if (selected.length === 0) {
     if (list.length === 0) return [];
     return [list[0]];
   }
-  const prevIndex = list.indexOf(selected[selected.length - 1]);
+  let prevIndex = list.indexOf(selected[selected.length - 1]);
+  if (compare) {
+    prevIndex = list.findIndex((item) => compare(item, selected[selected.length - 1]));
+  }
   const currIndex = Math.min(Math.max(prevIndex + delta, 0), list.length - 1);
   return handleSelect(list, selected, list[currIndex], ctrlKey, shiftKey, removable);
 }
