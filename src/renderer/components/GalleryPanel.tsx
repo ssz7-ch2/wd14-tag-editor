@@ -49,7 +49,7 @@ function GalleryPanel() {
     >
       <h2 className="panel-header">All Images</h2>
       <div id="gallery" onContextMenu={(e) => show({ event: e })}>
-        {imageList.map((image, i) => (
+        {imageList.map((image) => (
           <div
             key={image.path}
             className={`image-container${selectedImages.includes(image.path) ? ' selected' : ''}`}
