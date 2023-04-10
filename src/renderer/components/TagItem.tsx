@@ -115,6 +115,9 @@ function TagItem({ tag, moveToNext, panel, onClickHandler, ...props }: TagItemPr
           }
         }}
         onKeyDown={(e) => {
+          if (e.ctrlKey && editing) {
+            e.stopPropagation();
+          }
           switch (e.key) {
             case 'Enter':
               e.preventDefault();
@@ -143,6 +146,7 @@ function TagItem({ tag, moveToNext, panel, onClickHandler, ...props }: TagItemPr
                 e.preventDefault();
                 includeTags();
               }
+              break;
             default:
               break;
           }

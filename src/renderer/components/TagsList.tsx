@@ -34,7 +34,47 @@ function TagsList({ tags, panel }: TagsListProps) {
   const deleteTags = useSetAtom(deleteTagsAtom);
 
   return (
-    <div className="tags-list" onFocus={() => setSelectedTagsPanel(panel)} tabIndex={0}>
+    <div
+      className="tags-list"
+      onFocus={() => setSelectedTagsPanel(panel)}
+      tabIndex={0}
+      onKeyDown={(e) => {
+        switch (e.key) {
+          case 'a':
+          case 'A':
+            if (e.ctrlKey) {
+              e.preventDefault();
+              e.stopPropagation();
+              setSelectedTags(tags);
+            }
+            break;
+          case 'd':
+            if (e.ctrlKey) {
+              e.preventDefault();
+              e.stopPropagation();
+              clearSelectedTags();
+            }
+            break;
+          case 'ArrowDown':
+            e.preventDefault();
+            e.stopPropagation();
+            changeSelectedTags(tags, 1, e.ctrlKey, e.shiftKey);
+            break;
+          case 'ArrowUp':
+            e.preventDefault();
+            e.stopPropagation();
+            changeSelectedTags(tags, -1, e.ctrlKey, e.shiftKey);
+            break;
+          case 'Delete':
+            e.preventDefault();
+            e.stopPropagation();
+            deleteTags();
+            break;
+          default:
+            break;
+        }
+      }}
+    >
       {tags.map((tag, i) => (
         <TagItem
           key={tag.name}
@@ -48,26 +88,6 @@ function TagsList({ tags, panel }: TagsListProps) {
           }}
           onKeyDown={(e) => {
             switch (e.key) {
-              case 'a':
-              case 'A':
-                if (e.ctrlKey) {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setSelectedTags(tags);
-                }
-                break;
-              case 'd':
-                if (e.ctrlKey) {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  clearSelectedTags();
-                }
-                break;
-              case 'ArrowDown':
-                e.preventDefault();
-                e.stopPropagation();
-                changeSelectedTags(tags, 1, e.ctrlKey, e.shiftKey);
-                break;
               case 'Tab':
                 if (e.shiftKey) {
                   if (i > 0) {
@@ -85,16 +105,6 @@ function TagsList({ tags, panel }: TagsListProps) {
                     changePanel(panel, 'all', e);
                   }
                 }
-                break;
-              case 'ArrowUp':
-                e.preventDefault();
-                e.stopPropagation();
-                changeSelectedTags(tags, -1, e.ctrlKey, e.shiftKey);
-                break;
-              case 'Delete':
-                e.preventDefault();
-                e.stopPropagation();
-                deleteTags();
                 break;
               default:
                 break;
