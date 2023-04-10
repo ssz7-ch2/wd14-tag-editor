@@ -70,6 +70,7 @@ export const addTagsAtom = atom(null, (_get, set) => {
   set(popupAtom, {
     show: true,
     panel: 'selected',
+    type: 'add',
   });
 });
 
@@ -77,6 +78,7 @@ export const addTagsAllAtom = atom(null, (_get, set) => {
   set(popupAtom, {
     show: true,
     panel: 'all',
+    type: 'add',
   });
 });
 
@@ -425,6 +427,7 @@ export const removeAllImagesAtom = atom(null, (_get, set) => {
 
 export const changeSelectedImagesAtom = atom(
   null,
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   (get, set, delta: number, ctrlKey: boolean = false, shiftKey: boolean = false) => {
     const displayedImage = get(displayedImageAtom);
     const imageList = get(filteredImagesAtom);
@@ -453,7 +456,9 @@ export const changeSelectedTagsAtom = atom(
     set,
     tags: TagType[],
     delta: number,
+    // eslint-disable-next-line @typescript-eslint/no-inferrable-types
     ctrlKey: boolean = false,
+    // eslint-disable-next-line @typescript-eslint/no-inferrable-types
     shiftKey: boolean = false
   ) => {
     set(selectedTagsAtom, (prev) =>
@@ -541,3 +546,17 @@ export const changePanelAtom = atom(
     }
   }
 );
+
+export const popupSetSelectedTagAtom = atom(null, (get, set, value: string) => {
+  let tag = get(tagsListSelectedAtom).find((tag) => tag.name.startsWith(value));
+  if (tag) {
+    set(selectedTagsAtom, [tag]);
+    set(selectedTagsPanelAtom, 'selected');
+  } else {
+    tag = get(tagsListAllAtom).find((tag) => tag.name.startsWith(value));
+    if (tag) {
+      set(selectedTagsAtom, [tag]);
+      set(selectedTagsPanelAtom, 'all');
+    }
+  }
+});

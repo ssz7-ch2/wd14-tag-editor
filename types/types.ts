@@ -33,6 +33,7 @@ export type TagsPanelType = 'all' | 'selected';
 export type AddTagPopup = {
   show: boolean;
   panel: TagsPanelType;
+  type: 'add' | 'find';
 };
 
 export type ContextMenuIds = 'ImagePanel' | 'TagItem';

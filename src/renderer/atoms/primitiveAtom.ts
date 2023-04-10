@@ -29,6 +29,7 @@ export const taskStatusAtom = atom<TaskStatusType>({
 export const popupAtom = atom<AddTagPopup>({
   show: false,
   panel: 'selected',
+  type: 'add',
 });
 
 export const tagThresholdAtom = atom(0.2);

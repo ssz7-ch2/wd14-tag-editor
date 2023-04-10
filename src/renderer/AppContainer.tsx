@@ -3,6 +3,8 @@ import Split from 'react-split';
 import './AppContainer.css';
 import {
   changeSelectedImagesAtom,
+  filterAtom,
+  removeFilterAtom,
   saveTagsAtom,
   setFirstSelectedTag,
   tagAllImagesAtom,
@@ -23,6 +25,8 @@ function AppContainer() {
   const tagSelectedImages = useSetAtom(tagSelectedImagesAtom);
   const saveTags = useSetAtom(saveTagsAtom);
   const setFirstSelected = useSetAtom(setFirstSelectedTag);
+  const filter = useSetAtom(filterAtom);
+  const removeFilter = useSetAtom(removeFilterAtom);
 
   return (
     <div
@@ -40,11 +44,13 @@ function AppContainer() {
                   return {
                     show: false,
                     panel: 'all',
+                    type: 'add',
                   };
                 }
                 return {
                   show: true,
                   panel: 'all',
+                  type: 'add',
                 };
               });
             } else if (e.altKey) {
@@ -54,13 +60,48 @@ function AppContainer() {
                   return {
                     show: false,
                     panel: 'selected',
+                    type: 'add',
                   };
                 }
                 return {
                   show: true,
                   panel: 'selected',
+                  type: 'add',
                 };
               });
+            }
+            break;
+
+          case 'D':
+            if (e.altKey) {
+              e.preventDefault();
+              saveTags();
+            }
+            break;
+          case 'F':
+            if (e.ctrlKey) {
+              e.preventDefault();
+              setPopup((prev) => {
+                if (prev.show) {
+                  return {
+                    show: false,
+                    panel: 'all',
+                    type: 'find',
+                  };
+                }
+                return {
+                  show: true,
+                  panel: 'all',
+                  type: 'find',
+                };
+              });
+            } else if (e.altKey) {
+              e.preventDefault();
+              if (e.shiftKey) {
+                removeFilter();
+              } else {
+                filter();
+              }
             }
             break;
           case 'S':
@@ -70,12 +111,6 @@ function AppContainer() {
             } else if (e.altKey) {
               e.preventDefault();
               tagSelectedImages();
-            }
-            break;
-          case 'D':
-            if (e.altKey) {
-              e.preventDefault();
-              saveTags();
             }
             break;
           case 'ESCAPE':
