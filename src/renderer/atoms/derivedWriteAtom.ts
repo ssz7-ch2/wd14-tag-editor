@@ -149,8 +149,6 @@ export const deleteTagsAtom = atom(null, (get, set) => {
     }
   }
 
-  console.log(selectedTags, newSelectedTag);
-
   set(imagesTagsAtom, (prev) => {
     const updated = { ...prev };
     let imagePaths = Object.keys(prev);
@@ -503,17 +501,13 @@ export const editTagsAtom = atom(
         const target = prev[imagePath].find((tag) => tag.name === prevName);
         if (target) {
           let index = updated[imagePath].findIndex((tag) => tag.name === target.name);
-          console.log(index, prevName, tagName);
           updated[imagePath] = [...updated[imagePath]];
           if (prevName !== tagName) {
-            console.log('edited name');
             updated[imagePath] = updated[imagePath].filter((tag) => tag.name !== tagName);
             index = updated[imagePath].findIndex((tag) => tag.name === target.name);
           }
-          console.log(tagName);
           updatedTag = { name: tagName, score: score };
           updated[imagePath].splice(index, 1, updatedTag);
-          console.log(updated[imagePath]);
         }
       });
       // set(selectedTagsAtom, [updatedTag]);
@@ -559,4 +553,25 @@ export const popupSetSelectedTagAtom = atom(null, (get, set, value: string) => {
       set(selectedTagsPanelAtom, 'all');
     }
   }
+});
+
+export const tagItemContextMenuAtom = atom(null, (get, set, tag: TagType) => {
+  const selectedTags = get(selectedTagsAtom);
+  if (!selectedTags.includes(tag)) {
+    set(selectedTagsAtom, [tag]);
+  } else {
+    set(selectedTagsAtom, (prev) => [...prev.filter((t) => t !== tag), tag]);
+  }
+});
+
+export const copyTagsAtom = atom(null, (get, _set) => {
+  const selectedTags = get(selectedTagsAtom);
+  const tags =
+    get(selectedTagsPanelAtom) === 'selected' ? get(tagsListSelectedAtom) : get(tagsListAllAtom);
+  navigator.clipboard.writeText(
+    tags
+      .filter((tag) => selectedTags.some((t) => t.name === tag.name))
+      .map((tag) => tag.name)
+      .join(', ')
+  );
 });

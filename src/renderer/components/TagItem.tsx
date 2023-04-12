@@ -53,8 +53,6 @@ function TagItem({ tag, moveToNext, panel, onClickHandler, ...props }: TagItemPr
 
   const setSelectedTags = useSetAtom(selectedTagsAtom);
 
-  //console.log('render TagItem');
-
   useEffect(() => {
     if (focus && ref.current) {
       ref.current.querySelector('input')?.focus();
@@ -70,16 +68,13 @@ function TagItem({ tag, moveToNext, panel, onClickHandler, ...props }: TagItemPr
   }, [focus, ref.current, isLastSelected, tag, tag.name]);
 
   const handleOnClick = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
-    e.stopPropagation();
+    e.preventDefault();
     if (e.detail === 1 && focus && !editing) {
-      console.log('remove');
       setSelectedTags([]);
     } else if ((e.detail === 2 && !selected) || (e.detail === 1 && !editing)) {
       onClickHandler(e);
     }
   };
-
-  //console.log('render tagitem');
 
   return (
     <div
@@ -98,7 +93,6 @@ function TagItem({ tag, moveToNext, panel, onClickHandler, ...props }: TagItemPr
         readOnly={!editing}
         onChange={(e) => setTagName(e.target.value)}
         onDoubleClick={() => setEditing(true)}
-        onContextMenu={handleOnClick}
         onClick={handleOnClick}
         onBlur={() => {
           setEditing(false);
@@ -106,7 +100,6 @@ function TagItem({ tag, moveToNext, panel, onClickHandler, ...props }: TagItemPr
             const split = tagName.split(':');
             const score = split[split.length - 1];
             if (!isNaN(Number(score)) && score.length > 0) {
-              console.log(tagName.replace(`:${score}`, ''));
               editTags(tag.name, tagName.replace(`:${score}`, ''), Number(score));
               setTagName(tagName.replace(`:${score}`, ''));
             } else {

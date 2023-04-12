@@ -4,7 +4,6 @@ import TagsList from './TagsList';
 
 function TagsPanelAll() {
   const tagsList = useAtomValue(tagsListAllAtom);
-  console.log('render allpanel');
   return (
     <div className="panel">
       <h2 className="panel-header">All Image Tags</h2>

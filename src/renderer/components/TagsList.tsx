@@ -1,9 +1,12 @@
 import { useAtomValue, useSetAtom } from 'jotai';
+import { useContextMenu } from 'react-contexify';
 import {
   changePanelAtom,
   changeSelectedTagsAtom,
   clearSelectedTagsAtom,
+  copyTagsAtom,
   deleteTagsAtom,
+  tagItemContextMenuAtom,
 } from 'renderer/atoms/derivedWriteAtom';
 import {
   selectedTagsAtom,
@@ -11,7 +14,7 @@ import {
   tagThresholdAtom,
 } from 'renderer/atoms/primitiveAtom';
 import { handleSelect } from 'renderer/utils';
-import { TagType, TagsPanelType } from '../../../types/types';
+import { ContextMenuIds, TagType, TagsPanelType } from '../../../types/types';
 import TagItem from './TagItem';
 import './TagsList.css';
 
@@ -19,6 +22,8 @@ type TagsListProps = {
   tags: TagType[];
   panel: TagsPanelType;
 };
+
+const menuId: ContextMenuIds = 'TagItem';
 
 // TODO: copy tags to clipboard on ctrl + c
 
@@ -28,10 +33,16 @@ function TagsList({ tags, panel }: TagsListProps) {
   const clearSelectedTags = useSetAtom(clearSelectedTagsAtom);
   const changeSelectedTags = useSetAtom(changeSelectedTagsAtom);
   const changePanel = useSetAtom(changePanelAtom);
+  const tagItemContextMenu = useSetAtom(tagItemContextMenuAtom);
+  const copyTags = useSetAtom(copyTagsAtom);
 
   const tagThreshold = useAtomValue(tagThresholdAtom);
 
   const deleteTags = useSetAtom(deleteTagsAtom);
+
+  const { show } = useContextMenu({
+    id: menuId,
+  });
 
   return (
     <div
@@ -86,6 +97,15 @@ function TagsList({ tags, panel }: TagsListProps) {
           onClickHandler={(e) => {
             setSelectedTags((prev) => handleSelect(tags, prev, tag, e.ctrlKey, e.shiftKey, true));
           }}
+          onContextMenu={(e) => {
+            tagItemContextMenu(tag);
+            show({
+              event: e,
+              props: {
+                name: tag.name,
+              },
+            });
+          }}
           onKeyDown={(e) => {
             switch (e.key) {
               case 'Tab':
@@ -104,6 +124,11 @@ function TagsList({ tags, panel }: TagsListProps) {
                     console.log('test');
                     changePanel(panel, 'all', e);
                   }
+                }
+                break;
+              case 'c':
+                if (e.ctrlKey) {
+                  copyTags();
                 }
                 break;
               default:

@@ -1,8 +1,10 @@
 import { useAtomValue, useSetAtom } from 'jotai';
+import { Menu as ContextMenu, Item } from 'react-contexify';
 import Split from 'react-split';
 import './AppContainer.css';
 import {
   changeSelectedImagesAtom,
+  copyTagsAtom,
   filterAtom,
   removeFilterAtom,
   saveTagsAtom,
@@ -27,6 +29,7 @@ function AppContainer() {
   const setFirstSelected = useSetAtom(setFirstSelectedTag);
   const filter = useSetAtom(filterAtom);
   const removeFilter = useSetAtom(removeFilterAtom);
+  const copyTags = useSetAtom(copyTagsAtom);
 
   return (
     <div
@@ -155,6 +158,24 @@ function AppContainer() {
           <TagsPanel />
         </Split>
       </div>
+      <ContextMenu id="TagItem">
+        <Item
+          onClick={() => {
+            copyTags();
+          }}
+        >
+          Copy Selected Tags
+        </Item>
+        <Item
+          onClick={(e) => {
+            window.electron.ipcRenderer.sendMessage('openUrl', [
+              `https://danbooru.donmai.us/wiki_pages/${e.props.name}`,
+            ]);
+          }}
+        >
+          Open Danbooru Tag Wiki
+        </Item>
+      </ContextMenu>
     </div>
   );
 }
