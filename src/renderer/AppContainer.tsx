@@ -75,7 +75,7 @@ function AppContainer() {
             break;
 
           case 'S':
-            if (e.altKey) {
+            if (e.altKey || e.ctrlKey) {
               e.preventDefault();
               saveTags();
             }
