@@ -42,22 +42,6 @@ function AppContainer() {
             if (e.shiftKey && e.altKey) {
               e.preventDefault();
               setPopup((prev) => {
-                if (prev.show && prev.panel === 'all') {
-                  return {
-                    show: false,
-                    panel: 'all',
-                    type: 'add',
-                  };
-                }
-                return {
-                  show: true,
-                  panel: 'all',
-                  type: 'add',
-                };
-              });
-            } else if (e.altKey) {
-              e.preventDefault();
-              setPopup((prev) => {
                 if (prev.show && prev.panel === 'selected') {
                   return {
                     show: false,
@@ -71,10 +55,26 @@ function AppContainer() {
                   type: 'add',
                 };
               });
+            } else if (e.altKey) {
+              e.preventDefault();
+              setPopup((prev) => {
+                if (prev.show && prev.panel === 'all') {
+                  return {
+                    show: false,
+                    panel: 'all',
+                    type: 'add',
+                  };
+                }
+                return {
+                  show: true,
+                  panel: 'all',
+                  type: 'add',
+                };
+              });
             }
             break;
 
-          case 'D':
+          case 'S':
             if (e.altKey) {
               e.preventDefault();
               saveTags();
@@ -106,13 +106,13 @@ function AppContainer() {
               }
             }
             break;
-          case 'S':
+          case 'Q':
             if (e.shiftKey && e.altKey) {
               e.preventDefault();
-              tagAllImages();
+              tagSelectedImages();
             } else if (e.altKey) {
               e.preventDefault();
-              tagSelectedImages();
+              tagAllImages();
             }
             break;
           case 'ESCAPE':
