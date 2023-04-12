@@ -70,6 +70,16 @@ function GalleryPanel() {
                 );
               });
             }}
+            onContextMenu={(e) => {
+              if (!selectedImages.includes(image.path)) {
+                setSelectedImages([image.path]);
+              } else {
+                setSelectedImages((prev) => [
+                  ...prev.filter((imagePath) => imagePath !== image.path),
+                  image.path,
+                ]);
+              }
+            }}
           >
             <img src={image.thumbnail} alt="" onDragStart={(e) => e.preventDefault()} />
           </div>

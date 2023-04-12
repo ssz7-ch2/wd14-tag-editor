@@ -64,6 +64,14 @@ if (!lock) {
     saveTags(mainWindow, arg);
   });
 
+  ipcMain.on('openFileLocation', (_, arg) => {
+    if (arg[0]) shell.showItemInFolder(arg[0]);
+  });
+
+  ipcMain.on('openUrl', (_, arg) => {
+    if (arg[0]) shell.openExternal(arg[0]);
+  });
+
   ipcMain.on('openSettings', () => {
     openSettingsWindow();
   });

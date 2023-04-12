@@ -12,7 +12,9 @@ export type Channels =
   | 'task:cancel'
   | 'task:saveTags'
   | 'openSettings'
-  | 'setTagThreshold';
+  | 'setTagThreshold'
+  | 'openFileLocation'
+  | 'openUrl';
 
 // use taskStatus:start|name|message
 // use taskStatus:progress|name|message|percentage

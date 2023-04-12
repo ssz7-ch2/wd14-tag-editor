@@ -38,6 +38,10 @@ function ImagePanel() {
     id: menuId,
   });
 
+  const openFileLocation = () => {
+    window.electron.ipcRenderer.sendMessage('openFileLocation', [displayedImage?.path]);
+  };
+
   return (
     <div
       id="image-panel"
@@ -93,6 +97,9 @@ function ImagePanel() {
         <Item onClick={tagSelectedImages}>Tag Selected Images</Item>
         <Item onClick={removeImage}>Remove Selected Images</Item>
         <Item onClick={removeAllImages}>Remove All Images</Item>
+        <Item disabled={displayedImage == null} onClick={openFileLocation}>
+          Open File Location
+        </Item>
       </ContextMenu>
     </div>
   );
