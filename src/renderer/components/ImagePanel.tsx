@@ -91,8 +91,6 @@ function ImagePanel() {
         )}
       </div>
 
-      {/* TODO: right click open folder option, refactor context menu to AppContainer */}
-
       <ContextMenu id={menuId}>
         <Item onClick={tagSelectedImages}>Tag Selected Images</Item>
         <Item onClick={removeImage}>Remove Selected Images</Item>

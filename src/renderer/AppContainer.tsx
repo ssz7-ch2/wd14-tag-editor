@@ -36,7 +36,6 @@ function AppContainer() {
       id="app-container"
       tabIndex={0}
       onKeyDown={(e) => {
-        // TODO: add ctrl + f for searching tag (add search to popup)
         switch (e.key.toUpperCase()) {
           case 'A':
             if (Object.keys(images).length === 0) return;

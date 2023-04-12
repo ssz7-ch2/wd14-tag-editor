@@ -25,8 +25,6 @@ type TagsListProps = {
 
 const menuId: ContextMenuIds = 'TagItem';
 
-// TODO: copy tags to clipboard on ctrl + c
-
 function TagsList({ tags, panel }: TagsListProps) {
   const setSelectedTags = useSetAtom(selectedTagsAtom);
   const setSelectedTagsPanel = useSetAtom(selectedTagsPanelAtom);
