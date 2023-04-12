@@ -135,7 +135,7 @@ function TagItem({ tag, moveToNext, panel, onClickHandler, ...props }: TagItemPr
               }
               break;
             case 'i':
-              if (!editing) {
+              if (!editing && e.altKey) {
                 e.preventDefault();
                 includeTags();
               }
