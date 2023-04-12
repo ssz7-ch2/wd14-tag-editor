@@ -126,10 +126,13 @@ if (!lock) {
       return path.join(RESOURCES_PATH, ...paths);
     };
 
+    const bounds = settingsStore.get('bounds');
     mainWindow = new BrowserWindow({
       show: false,
-      width: 1200,
-      height: 800,
+      width: bounds.width,
+      height: bounds.height,
+      x: bounds.x,
+      y: bounds.y,
       icon: getAssetPath('icon.png'),
       backgroundColor: 'black',
       minWidth: 1000,
@@ -160,6 +163,10 @@ if (!lock) {
 
     mainWindow.on('closed', () => {
       mainWindow = null;
+    });
+
+    mainWindow.on('close', () => {
+      settingsStore.set('bounds', mainWindow?.getBounds());
       settingsWindow?.close();
     });
 

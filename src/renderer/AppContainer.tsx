@@ -31,6 +31,8 @@ function AppContainer() {
   const removeFilter = useSetAtom(removeFilterAtom);
   const copyTags = useSetAtom(copyTagsAtom);
 
+  const appContainerSizes = window.electron.store.get('appContainerSizes');
+
   return (
     <div
       id="app-container"
@@ -148,9 +150,10 @@ function AppContainer() {
         <Split
           className="split"
           snapOffset={0}
-          sizes={[55, 12, 33]}
+          sizes={appContainerSizes}
           minSize={[400, 100, 250]}
           expandToMin
+          onDragEnd={(sizes) => window.electron.store.set('appContainerSizes', sizes)}
         >
           <ImagePanel />
           <GalleryPanel />

@@ -7,6 +7,9 @@ export type storeType = {
   threshold: number;
   thresholdLow: number;
   saveScores: boolean;
+  bounds: Electron.Rectangle;
+  appContainerSizes: number[];
+  tagsPanelSizes: number[];
 };
 
 const storeSchema: Schema<storeType> = {
@@ -40,6 +43,23 @@ const storeSchema: Schema<storeType> = {
   saveScores: {
     type: 'boolean',
     default: false,
+  },
+  bounds: {
+    type: 'object',
+    default: {
+      width: 1200,
+      height: 800,
+      x: undefined,
+      y: undefined,
+    },
+  },
+  appContainerSizes: {
+    type: 'array',
+    default: [55, 12, 33],
+  },
+  tagsPanelSizes: {
+    type: 'array',
+    default: [50, 50],
   },
 };
 
