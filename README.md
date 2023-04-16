@@ -35,20 +35,20 @@ e.g. `tomato:0.8` will set the score for tomato to 0.8
 | Settings        | Description                                                                         |
 | --------------- | ----------------------------------------------------------------------------------- |
 | Tagger Model    | wd1.4 tagger model used for tagging the images (swinv2, convnextv2, convnext)       |
-| Use Tensorflow  | use tensorflow instead of onnxruntime                                               |
+| Use Tensorflow  | use tensorflow instead of onnxruntime\*                                             |
 | Batch Size      | batch size for tensorflow (onnx model only uses batch 1)                            |
 | Threshold       | tags below this threshold are grayed out and not saved when saving tags             |
 | Threshold Low   | threshold for the tagger model, tags below this threshold won't be displayed at all |
 | Save Tag Scores | save tag scores when saving tags (for training with weighted captions/tags)         |
 
+\*would only recommend tensorflow if you are tagging a large number of images and have a gpu with more than 12GB of vram.
+
 ## Run Without Image Tagging Functionality
 
-It is possible to use the app as only a tag editor by placing an empty venv folder within the python folder.
+It is possible to use the app as only a tag editor by placing an empty venv folder within the python folder. This will prevent any tagger models or python packages from being downloaded.
 
 - python
   - venv
-
-This will drastically reduce the amount of space required to use the app (~280MB).
 
 ## Manual Setup
 
@@ -68,7 +68,7 @@ pip install -r requirements.txt
 
 ### tagger models
 
-The app downloads these three models  
+These three tagger models are used  
 https://huggingface.co/SmilingWolf/wd-v1-4-swinv2-tagger-v2  
 https://huggingface.co/SmilingWolf/wd-v1-4-convnextv2-tagger-v2  
 https://huggingface.co/SmilingWolf/wd-v1-4-convnext-tagger-v2
