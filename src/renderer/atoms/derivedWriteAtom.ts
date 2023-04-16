@@ -358,15 +358,28 @@ export const openFolderAtom = atom(null, (_get, set) => {
 export const popupSetImagesTagsAtom = atom(
   null,
   (get, set, panel: TagsPanelType, value: string) => {
+    let name = value;
+    let score = 1;
+
+    const split = value.split(':');
+    const scoreString = split[split.length - 1];
+    if (!isNaN(Number(scoreString)) && scoreString.length > 0) {
+      score = Number(scoreString);
+      name = value.replace(`:${scoreString}`, '');
+    }
+
     set(imagesTagsAtom, (prev) => {
       const updated = { ...prev };
       if (panel === 'all') {
         Object.entries(updated).forEach(([imagePath, tags]) => {
-          updated[imagePath] = [{ name: value, score: 1 }, ...tags];
+          updated[imagePath] = [{ name, score }, ...tags.filter((tag) => tag.name !== name)];
         });
       } else {
         get(selectedImagesAtom).forEach((imagePath) => {
-          updated[imagePath] = [{ name: value, score: 1 }, ...prev[imagePath]];
+          updated[imagePath] = [
+            { name, score },
+            ...prev[imagePath].filter((tag) => tag.name !== name),
+          ];
         });
       }
 
