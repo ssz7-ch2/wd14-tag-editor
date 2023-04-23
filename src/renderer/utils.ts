@@ -18,6 +18,9 @@ export const sortTagScore = (a: TagType, b: TagType) => {
   return 0;
 };
 
+export const isValidImage = (filePath: string) =>
+  filePath.endsWith('.png') || filePath.endsWith('.jpg') || filePath.endsWith('.jpeg');
+
 export function handleKeySelect<T>(
   list: T[],
   selected: T[],

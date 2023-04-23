@@ -1,5 +1,6 @@
 import { useSetAtom } from 'jotai';
 import { imagesDataAtom } from 'renderer/atoms/derivedWriteAtom';
+import { isValidImage } from 'renderer/utils';
 import { Images, TagData } from '../../../types/types';
 import './SelectImages.css';
 
@@ -27,6 +28,10 @@ function SelectImages() {
         } else {
           filePaths = [...e.dataTransfer.files].map((file) => file.path);
         }
+
+        filePaths = filePaths.filter((path) => isValidImage(path));
+        if (filePaths.length === 0) return;
+
         window.electron.ipcRenderer.sendMessage('task:loadImages', filePaths);
         window.electron.ipcRenderer.once('task:loadImages', (images, imagesTags) =>
           setImagesData(images as Images, imagesTags as TagData)

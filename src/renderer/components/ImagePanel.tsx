@@ -8,6 +8,7 @@ import {
   tagSelectedImagesAtom,
 } from 'renderer/atoms/derivedWriteAtom';
 import { imagesAtom, selectedImagesAtom } from 'renderer/atoms/primitiveAtom';
+import { isValidImage } from 'renderer/utils';
 import { ContextMenuIds, ImageFileInfo, Images, TagData } from '../../../types/types';
 import './ImagePanel.css';
 
@@ -77,6 +78,9 @@ function ImagePanel() {
           } else {
             filePaths = [...e.dataTransfer.files].map((file) => file.path);
           }
+
+          filePaths = filePaths.filter((path) => isValidImage(path));
+          if (filePaths.length === 0) return;
 
           window.electron.ipcRenderer.sendMessage('task:loadImages', filePaths);
           window.electron.ipcRenderer.once('task:loadImages', (images, imagesTags) =>
