@@ -293,8 +293,10 @@ export const tagAllImagesAtom = atom(null, (get, set) => {
     set(imagesTagsAtom, (prev) => {
       const updated = { ...prev };
       Object.entries(tagData).forEach(([imagePath, tags]) => {
-        const prevTags = updated[imagePath];
-        updated[imagePath] = tags.concat(prevTags.filter((tag) => !tags.includes(tag)));
+        const prevTags = prev[imagePath];
+        updated[imagePath] = tags.concat(
+          prevTags.filter((tag) => !tags.some((t) => t.name === tag.name))
+        );
       });
       return updated;
     });
@@ -308,8 +310,10 @@ export const tagSelectedImagesAtom = atom(null, (get, set) => {
     set(imagesTagsAtom, (prev) => {
       const updated = { ...prev };
       Object.entries(tagData).forEach(([imagePath, tags]) => {
-        const prevTags = updated[imagePath];
-        updated[imagePath] = tags.concat(prevTags.filter((tag) => !tags.includes(tag)));
+        const prevTags = prev[imagePath];
+        updated[imagePath] = tags.concat(
+          prevTags.filter((tag) => !tags.some((t) => t.name === tag.name))
+        );
       });
       return updated;
     });

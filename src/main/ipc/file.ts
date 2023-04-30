@@ -15,6 +15,16 @@ const getFileInfo = async (filePath: string): Promise<[ImageFileInfo, TagType[]]
   try {
     const content = await fs.promises.readFile(tagsFilePath, 'utf-8');
     tags = content.split(',').map(parseTagString);
+    const seen = new Set<string>();
+    const uniqueTags: TagType[] = [];
+    tags.forEach((tag) => {
+      if (!seen.has(tag.name)) {
+        seen.add(tag.name);
+        uniqueTags.push(tag);
+      }
+    });
+
+    tags = uniqueTags;
   } catch (error) {
     /* tags don't exist */
   }
